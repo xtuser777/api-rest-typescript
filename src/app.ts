@@ -5,6 +5,7 @@ dotenv.config();
 import express from 'express';
 import city from './routes/city';
 import state from './routes/state';
+import level from './routes/level';
 
 class App {
   private app: express.Express;
@@ -30,6 +31,7 @@ class App {
   routes() {
     this.app.use('/state', state);
     this.app.use('/city', city);
+    this.app.use('/level', level);
   }
 }
 

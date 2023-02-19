@@ -5,6 +5,8 @@ const router = Router();
 
 router.get('/', new CityController().get);
 
+router.get('/state/:id', new CityController().getState);
+
 router.get('/id/:id', new CityController().getById);
 
 router.get('/state/:state', new CityController().getByState);

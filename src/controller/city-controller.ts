@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { City } from '../model/city';
+import { State } from '../model/state';
 import Database from '../util/database';
 
 export class CityController {
@@ -19,6 +20,17 @@ export class CityController {
     await Database.instance.close();
 
     return res.json(city);
+  };
+
+  getState = async (req: Request, res: Response): Promise<Response> => {
+    if (!req.params.id) return res.status(400).json('Parametro ausente.');
+
+    await Database.instance.open();
+    const city = (await new City().find({ id: Number.parseInt(req.params.id) }))[0];
+    const state = (await new State().find({ id: city.getStateId() }))[0];
+    await Database.instance.close();
+
+    return res.json(state);
   };
 
   getByState = async (req: Request, res: Response): Promise<Response> => {
