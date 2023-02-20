@@ -1,8 +1,17 @@
 import Database from '../util/database';
 import { Employee } from '../model/employee';
 import { Request, Response } from 'express';
+import { User } from '../model/user';
 
 export class EmployeeController {
+  get = async (req: Request, res: Response): Promise<Response> => {
+    await Database.instance.open();
+    const users = await new User().find();
+    await Database.instance.close();
+
+    return res.json(users);
+  };
+
   desactivate = async (req: Request, res: Response): Promise<Response> => {
     if (!req.params.id) return res.status(400).json('Parametro ausente');
 

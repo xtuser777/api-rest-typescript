@@ -6,6 +6,7 @@ import express from 'express';
 import city from './routes/city';
 import state from './routes/state';
 import level from './routes/level';
+import employee from './routes/employee';
 
 class App {
   private app: express.Express;
@@ -32,6 +33,7 @@ class App {
     this.app.use('/state', state);
     this.app.use('/city', city);
     this.app.use('/level', level);
+    this.app.use('/employee', employee);
   }
 }
 
