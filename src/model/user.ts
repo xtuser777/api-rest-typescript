@@ -7,7 +7,7 @@ interface IFields {
   password?: string;
   active?: boolean;
   personName?: string;
-  contactId?: number;
+  contactId?: string;
   employeeAdmission?: string;
   orderBy?: string;
 }
@@ -126,20 +126,24 @@ export class User {
       if (fields.login && fields.personName && fields.contactId) {
         if (fields.employeeAdmission) {
           parameters.push(
-            fields.login,
-            fields.personName,
-            fields.contactId,
-            fields.employeeAdmission,
+            `%${fields.login}%`,
+            `%${fields.personName}%`,
+            `%${fields.contactId}%`,
+            `%${fields.employeeAdmission}%`,
           );
           builder = builder
             .where('(u.usu_login like ? or pf.pf_nome like ? or ct.ctt_id like ?)')
             .and('date(f.fun_admissao) = date(?)');
         } else {
-          parameters.push(fields.login, fields.personName, fields.contactId);
+          parameters.push(
+            `%${fields.login}%`,
+            `%${fields.personName}%`,
+            `%${fields.contactId}%`,
+          );
           builder = builder
             .where('u.usu_login like ?')
-            .and('pf.pf_nome like ?')
-            .and('ct.ctt_id like ?');
+            .or('pf.pf_nome like ?')
+            .or('ct.ctt_id like ?');
         }
       }
 

@@ -12,6 +12,32 @@ export class EmployeeController {
     return res.json(users);
   };
 
+  getByFilter = async (req: Request, res: Response): Promise<Response> => {
+    const filter = req.params.filter ? req.params.filter : '';
+
+    await Database.instance.open();
+    const users = await new User().find({
+      login: filter,
+      personName: filter,
+      contactId: filter,
+    });
+    await Database.instance.close();
+
+    return res.json(users);
+  };
+
+  getByAdmission = async (req: Request, res: Response): Promise<Response> => {
+    if (!req.params.admission) return res.status(400).json('Parametro ausente');
+
+    const admission = req.params.admission;
+
+    await Database.instance.open();
+    const users = await new User().find({ employeeAdmission: admission });
+    await Database.instance.close();
+
+    return res.json(users);
+  };
+
   desactivate = async (req: Request, res: Response): Promise<Response> => {
     if (!req.params.id) return res.status(400).json('Parametro ausente');
 

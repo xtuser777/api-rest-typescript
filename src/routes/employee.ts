@@ -5,7 +5,9 @@ const router = Router();
 
 router.get('/', new EmployeeController().get);
 
-// router.get('/id/:id', new EmployeeController().getById);
+router.get('/filter/:filter', new EmployeeController().getByFilter);
+
+router.get('/admission/:admission', new EmployeeController().getByAdmission);
 
 router.get('/desactivate/:id', new EmployeeController().desactivate);
 
