@@ -6,8 +6,7 @@ interface IFields {
   login?: string;
   password?: string;
   active?: boolean;
-  personName?: string;
-  contactId?: string;
+  filter?: string;
   employeeAdmission?: string;
   orderBy?: string;
 }
@@ -118,18 +117,13 @@ export class User {
           .and('u.usu_ativo = true');
       }
 
-      if (fields.employeeAdmission) {
-        parameters.push(fields.employeeAdmission);
-        builder = builder.where('date(f.fun_admissao) = date(?)');
-      }
-
-      if (fields.login && fields.personName && fields.contactId) {
+      if (fields.filter) {
         if (fields.employeeAdmission) {
           parameters.push(
-            `%${fields.login}%`,
-            `%${fields.personName}%`,
-            `%${fields.contactId}%`,
-            `%${fields.employeeAdmission}%`,
+            `%${fields.filter}%`,
+            `%${fields.filter}%`,
+            `%${fields.filter}%`,
+            fields.employeeAdmission,
           );
           builder = builder
             .where('(u.usu_login like ? or pf.pf_nome like ? or ct.ctt_id like ?)')
@@ -137,13 +131,18 @@ export class User {
         } else {
           parameters.push(
             `%${fields.login}%`,
-            `%${fields.personName}%`,
-            `%${fields.contactId}%`,
+            `%${fields.filter}%`,
+            `%${fields.filter}%`,
           );
           builder = builder
             .where('u.usu_login like ?')
             .or('pf.pf_nome like ?')
             .or('ct.ctt_id like ?');
+        }
+      } else {
+        if (fields.employeeAdmission) {
+          parameters.push(fields.employeeAdmission);
+          builder = builder.where('date(f.fun_admissao) = date(?)');
         }
       }
 

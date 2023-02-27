@@ -3,11 +3,9 @@ import { EmployeeController } from '../controller/employee-controller';
 
 const router = Router();
 
-router.get('/', new EmployeeController().get);
+router.get('/', new EmployeeController().index);
 
-router.get('/filter/:filter', new EmployeeController().getByFilter);
-
-router.get('/admission/:admission', new EmployeeController().getByAdmission);
+router.get('/:id', new EmployeeController().show);
 
 router.get('/desactivate/:id', new EmployeeController().desactivate);
 

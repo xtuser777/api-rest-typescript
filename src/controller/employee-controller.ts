@@ -4,38 +4,38 @@ import { Request, Response } from 'express';
 import { User } from '../model/user';
 
 export class EmployeeController {
-  get = async (req: Request, res: Response): Promise<Response> => {
+  index = async (req: Request, res: Response): Promise<Response> => {
+    if (!req.body) return res.status(400).json('Requisicao sem corpo.');
+
+    if (req.body.isLastAdmin) return this.isLastAdmin(req, res);
+
     await Database.instance.open();
-    const users = await new User().find();
+    const users = await new User().find(req.body);
     await Database.instance.close();
 
     return res.json(users);
   };
 
-  getByFilter = async (req: Request, res: Response): Promise<Response> => {
-    const filter = req.params.filter ? req.params.filter : '';
+  show = async (req: Request, res: Response): Promise<Response> => {
+    if (!req.params.id) return res.status(400).json('Parametro ausente');
+
+    const id = Number.parseInt(req.params.id);
 
     await Database.instance.open();
-    const users = await new User().find({
-      login: filter,
-      personName: filter,
-      contactId: filter,
-    });
+    const users = await new User().find({ id });
     await Database.instance.close();
 
     return res.json(users);
   };
 
-  getByAdmission = async (req: Request, res: Response): Promise<Response> => {
-    if (!req.params.admission) return res.status(400).json('Parametro ausente');
-
-    const admission = req.params.admission;
-
+  isLastAdmin = async (req: Request, res: Response): Promise<Response> => {
     await Database.instance.open();
-    const users = await new User().find({ employeeAdmission: admission });
+    const count = await new User().adminCount();
     await Database.instance.close();
 
-    return res.json(users);
+    console.log(count);
+
+    return res.json(count == 1);
   };
 
   desactivate = async (req: Request, res: Response): Promise<Response> => {
