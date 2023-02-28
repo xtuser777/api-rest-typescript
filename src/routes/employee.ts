@@ -11,4 +11,6 @@ router.get('/desactivate/:id', new EmployeeController().desactivate);
 
 router.get('/reactivate/:id', new EmployeeController().reactivate);
 
+router.delete('/:id', new EmployeeController().delete);
+
 export default router;

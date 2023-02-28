@@ -91,7 +91,7 @@ export class Contact {
     return result;
   };
 
-  dalete = async (): Promise<number> => {
+  delete = async (): Promise<number> => {
     if (this.id <= 0) return -5;
 
     const query = new QueryBuilder().delete('contato').where('ctt_id = ?').build();
