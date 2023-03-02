@@ -156,9 +156,21 @@ export class EmployeeController {
       address.city,
     ).save();
     if (ads <= 0) {
-      await Database.instance.rollback();
-      await Database.instance.close();
-      return res.status(400).json('erro ao inserir o endereco.');
+      if (ads == -10) {
+        await Database.instance.rollback();
+        await Database.instance.close();
+        return res.status(400).json('erro ao inserir o endereco.');
+      }
+      if (ads == -5) {
+        await Database.instance.rollback();
+        await Database.instance.close();
+        return res.status(400).json('campos incorretos no endereco.');
+      }
+      if (ads == -1) {
+        await Database.instance.rollback();
+        await Database.instance.close();
+        return res.status(400).json('erro ao conectar ao banco de dados.');
+      }
     }
 
     const ctt = await new Contact(
@@ -169,9 +181,21 @@ export class EmployeeController {
       ads,
     ).save();
     if (ctt <= 0) {
-      await Database.instance.rollback();
-      await Database.instance.close();
-      return res.status(400).json('erro ao inserir o contato.');
+      if (ctt == -10) {
+        await Database.instance.rollback();
+        await Database.instance.close();
+        return res.status(400).json('erro ao inserir o contato.');
+      }
+      if (ctt == -5) {
+        await Database.instance.rollback();
+        await Database.instance.close();
+        return res.status(400).json('campos incorretos no contato.');
+      }
+      if (ctt == -1) {
+        await Database.instance.rollback();
+        await Database.instance.close();
+        return res.status(400).json('erro ao conectar ao banco de dados.');
+      }
     }
 
     const per = await new IndividualPerson(
@@ -183,9 +207,21 @@ export class EmployeeController {
       ctt,
     ).save();
     if (per <= 0) {
-      await Database.instance.rollback();
-      await Database.instance.close();
-      return res.status(400).json('erro ao inserir o pessoa.');
+      if (per == -10) {
+        await Database.instance.rollback();
+        await Database.instance.close();
+        return res.status(400).json('erro ao inserir a pessoa.');
+      }
+      if (per == -5) {
+        await Database.instance.rollback();
+        await Database.instance.close();
+        return res.status(400).json('campos incorretos na pessoa.');
+      }
+      if (per == -1) {
+        await Database.instance.rollback();
+        await Database.instance.close();
+        return res.status(400).json('erro ao conectar ao banco de dados.');
+      }
     }
 
     const emp = await new Employee(
@@ -196,24 +232,43 @@ export class EmployeeController {
       per,
     ).save();
     if (emp <= 0) {
-      await Database.instance.rollback();
-      await Database.instance.close();
-      return res.status(400).json('erro ao inserir o funcionário.');
+      if (emp == -10) {
+        await Database.instance.rollback();
+        await Database.instance.close();
+        return res.status(400).json('erro ao inserir o funcionario.');
+      }
+      if (emp == -5) {
+        await Database.instance.rollback();
+        await Database.instance.close();
+        return res.status(400).json('campos incorretos no funcionario.');
+      }
+      if (emp == -1) {
+        await Database.instance.rollback();
+        await Database.instance.close();
+        return res.status(400).json('erro ao conectar ao banco de dados.');
+      }
     }
 
-    const usu = await new User(
-      0,
-      user.login,
-      user.password,
-      '',
-      true,
-      emp,
-      user.level,
-    ).save();
+    const usu =
+      employee.type == 1
+        ? await new User(0, user.login, user.password, '', true, emp, user.level).save()
+        : await new User(0, '', '', '', false, emp, user.level).save();
     if (usu <= 0) {
-      await Database.instance.rollback();
-      await Database.instance.close();
-      return res.status(400).json('erro ao inserir o usuário.');
+      if (usu == -10) {
+        await Database.instance.rollback();
+        await Database.instance.close();
+        return res.status(400).json('erro ao inserir o usuario.');
+      }
+      if (usu == -5) {
+        await Database.instance.rollback();
+        await Database.instance.close();
+        return res.status(400).json('campos incorretos no usuario.');
+      }
+      if (usu == -1) {
+        await Database.instance.rollback();
+        await Database.instance.close();
+        return res.status(400).json('erro ao conectar ao banco de dados.');
+      }
     }
 
     await Database.instance.commit();
@@ -223,7 +278,7 @@ export class EmployeeController {
   };
 
   update = async (req: Request, res: Response): Promise<Response> => {
-    if (!req.body) return res.status(400).json('funcao sem corpo.');
+    if (!req.body) return res.status(400).json('requisicao sem corpo.');
 
     if (req.body.desactivate) return this.desactivate(req, res);
 
@@ -345,37 +400,97 @@ export class EmployeeController {
 
     const usr = await new User(id).delete();
     if (usr <= 0) {
-      await Database.instance.rollback();
-      await Database.instance.close();
-      return res.status(400).json('Erro ao remover o usuário.');
+      if (usr == -10) {
+        await Database.instance.rollback();
+        await Database.instance.close();
+        return res.status(400).json('Erro ao remover o usuário.');
+      }
+      if (usr == -5) {
+        await Database.instance.rollback();
+        await Database.instance.close();
+        return res.status(400).json('campos incorretos no usuário.');
+      }
+      if (usr == -1) {
+        await Database.instance.rollback();
+        await Database.instance.close();
+        return res.status(400).json('erro ao conectar ao banco de dados.');
+      }
     }
 
     const emp = await employee.delete();
     if (emp <= 0) {
-      await Database.instance.rollback();
-      await Database.instance.close();
-      return res.status(400).json('Erro ao remover o funcionário.');
+      if (emp == -10) {
+        await Database.instance.rollback();
+        await Database.instance.close();
+        return res.status(400).json('Erro ao remover o funcionario.');
+      }
+      if (emp == -5) {
+        await Database.instance.rollback();
+        await Database.instance.close();
+        return res.status(400).json('campos incorretos no funcionario.');
+      }
+      if (emp == -1) {
+        await Database.instance.rollback();
+        await Database.instance.close();
+        return res.status(400).json('erro ao conectar ao banco de dados.');
+      }
     }
 
     const per = await person.delete();
     if (per <= 0) {
-      await Database.instance.rollback();
-      await Database.instance.close();
-      return res.status(400).json('Erro ao remover a pessoa.');
+      if (per == -10) {
+        await Database.instance.rollback();
+        await Database.instance.close();
+        return res.status(400).json('Erro ao remover a pessoa.');
+      }
+      if (per == -5) {
+        await Database.instance.rollback();
+        await Database.instance.close();
+        return res.status(400).json('campos incorretos na pessoa.');
+      }
+      if (per == -1) {
+        await Database.instance.rollback();
+        await Database.instance.close();
+        return res.status(400).json('erro ao conectar ao banco de dados.');
+      }
     }
 
     const ctt = await contact.delete();
     if (ctt <= 0) {
-      await Database.instance.rollback();
-      await Database.instance.close();
-      return res.status(400).json('Erro ao remover c contato.');
+      if (ctt == -10) {
+        await Database.instance.rollback();
+        await Database.instance.close();
+        return res.status(400).json('Erro ao remover o contato.');
+      }
+      if (ctt == -5) {
+        await Database.instance.rollback();
+        await Database.instance.close();
+        return res.status(400).json('campos incorretos no contato.');
+      }
+      if (ctt == -1) {
+        await Database.instance.rollback();
+        await Database.instance.close();
+        return res.status(400).json('erro ao conectar ao banco de dados.');
+      }
     }
 
     const ads = await address.delete();
     if (ads <= 0) {
-      await Database.instance.rollback();
-      await Database.instance.close();
-      return res.status(400).json('Erro ao remover o endereco.');
+      if (ads == -10) {
+        await Database.instance.rollback();
+        await Database.instance.close();
+        return res.status(400).json('Erro ao remover o endereco.');
+      }
+      if (ads == -5) {
+        await Database.instance.rollback();
+        await Database.instance.close();
+        return res.status(400).json('campos incorretos no endereco.');
+      }
+      if (ads == -1) {
+        await Database.instance.rollback();
+        await Database.instance.close();
+        return res.status(400).json('erro ao conectar ao banco de dados.');
+      }
     }
 
     await Database.instance.commit();
