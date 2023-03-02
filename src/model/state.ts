@@ -13,7 +13,6 @@ export class State {
     private id: number = 0,
     private name: string = '',
     private acronym: string = '',
-    private cities: City[] = [],
   ) {}
 
   getId = () => this.id;
@@ -59,6 +58,5 @@ export class State {
     this.id = row.est_id;
     this.name = row.est_nome;
     this.acronym = row.est_sigla;
-    this.cities = await new City().find({ state: this.id });
   };
 }

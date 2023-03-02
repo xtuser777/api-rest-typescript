@@ -3,15 +3,15 @@ import { Level } from '../model/level';
 import { Request, Response } from 'express';
 
 export class LevelController {
-  get = async (req: Request, res: Response): Promise<Response> => {
+  index = async (req: Request, res: Response): Promise<Response> => {
     await Database.instance.open();
-    const levels = await new Level().find();
+    const levels = await new Level().find(req.body);
     await Database.instance.close();
 
     return res.json(levels);
   };
 
-  getById = async (req: Request, res: Response): Promise<Response> => {
+  show = async (req: Request, res: Response): Promise<Response> => {
     if (!req.params.id) return res.status(400).json('Parametro ausente');
 
     await Database.instance.open();

@@ -3,8 +3,8 @@ import { LevelController } from '../controller/level-controller';
 
 const router = Router();
 
-router.get('/', new LevelController().get);
+router.get('/', new LevelController().index);
 
-router.get('/id/:id', new LevelController().getById);
+router.get('/:id', new LevelController().show);
 
 export default router;

@@ -3,10 +3,8 @@ import { StateController } from '../controller/state-controller';
 
 const router = Router();
 
-router.get('/', new StateController().get);
+router.get('/', new StateController().index);
 
-router.get('/id/:id', new StateController().getById);
-
-router.get('/name/:name', new StateController().getByName);
+router.get('/:id', new StateController().show);
 
 export default router;
