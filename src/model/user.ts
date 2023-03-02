@@ -25,6 +25,7 @@ export class User {
   getId = () => this.id;
   getLogin = () => this.login;
   getPassword = () => this.password;
+  getPasswordHash = () => this.password_hash;
   isActive = () => this.active;
   getEmployeeId = () => this.employeeId;
   getLevelId = () => this.levelId;
@@ -50,22 +51,15 @@ export class User {
     return result;
   };
 
-  update = async (): Promise<number> => {
-    if (this.id <= 0 || this.employeeId === 0 || this.levelId === 0) return -5;
+  update = async (params: any): Promise<number> => {
+    if (this.id <= 0 || this.levelId === 0) return -5;
 
     let result = 0;
-    const parameters = [
-      this.login,
-      this.password,
-      this.active,
-      this.employeeId,
-      this.levelId,
-      this.id,
-    ];
+    const parameters = [params.login, params.password, params.level, this.id];
 
     const query = new QueryBuilder()
       .update('usuario')
-      .set('usu_login = ?,usu_senha = ?,usu_ativo = ?,fun_id = ?,niv_id = ?')
+      .set('usu_login = ?,usu_senha = ?,niv_id = ?')
       .where('usu_id = ?')
       .build();
 

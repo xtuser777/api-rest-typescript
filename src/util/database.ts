@@ -115,11 +115,11 @@ export default class Database {
         return Number.parseInt(result.affectedRows);
       } catch (err) {
         console.error(err);
-        return -1;
+        return -10;
       }
     } else {
       console.log('Conexão fechada... Tente abrir a conexão com a função open()');
-      return -5;
+      return -1;
     }
   }
 

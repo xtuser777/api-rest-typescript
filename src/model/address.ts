@@ -96,16 +96,18 @@ export class Address {
     return addresses;
   };
 
-  update = async (): Promise<number> => {
+  update = async (params: any): Promise<number> => {
     const db = Database.instance;
+
     let result = 0;
+
     const parameters = [
-      this.street,
-      this.number,
-      this.neighborhood,
-      this.complement,
-      this.code,
-      this.cityId,
+      params.street,
+      params.number,
+      params.neighborhood,
+      params.complement,
+      params.code,
+      params.city,
       this.id,
     ];
 

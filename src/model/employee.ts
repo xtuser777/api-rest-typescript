@@ -38,16 +38,15 @@ export class Employee {
     return result;
   };
 
-  update = async (): Promise<number> => {
-    if (this.id != 0 || this.type <= 0 || this.admission == null || this.personId === 0)
-      return -5;
+  update = async (params: any): Promise<number> => {
+    if (this.id <= 0 || params.type <= 0 || params.admission == null) return -5;
 
     let result = 0;
-    const parameters = [this.type, this.admission, this.personId, this.id];
+    const parameters = [params.type, params.admission, this.id];
 
     const query = new QueryBuilder()
       .update('funcionario')
-      .set('fun_tipo = ?, fun_admissao = ?, pf_id = ?')
+      .set('fun_tipo = ?, fun_admissao = ?')
       .where('fun_id = ?')
       .build();
 

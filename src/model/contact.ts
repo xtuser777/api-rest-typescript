@@ -68,21 +68,20 @@ export class Contact {
     return contacts;
   };
 
-  update = async (): Promise<number> => {
+  update = async (params: any): Promise<number> => {
     if (
       this.id <= 0 ||
-      this.phone.length < 14 ||
-      this.cellphone.length < 15 ||
-      !isEmail(this.email) ||
-      this.addressId == 0
+      params.phone.length < 14 ||
+      params.cellphone.length < 15 ||
+      !isEmail(params.email)
     )
       return -5;
 
-    const parameters = [this.phone, this.cellphone, this.email, this.addressId, this.id];
+    const parameters = [params.phone, params.cellphone, params.email, this.id];
 
     const query = new QueryBuilder()
       .update('contato')
-      .set('ctt_telefone = ?, ctt_celular = ?, ctt_email = ?, end_id = ?')
+      .set('ctt_telefone = ?, ctt_celular = ?, ctt_email = ?')
       .where('ctt_id = ?')
       .build();
 

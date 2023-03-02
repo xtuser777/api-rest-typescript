@@ -142,30 +142,22 @@ export class IndividualPerson extends Person {
     return persons;
   };
 
-  update = async (): Promise<number> => {
+  update = async (params: any): Promise<number> => {
     if (
       this.id <= 0 ||
-      this.name.trim().length <= 0 ||
-      this.rg.trim().length <= 0 ||
-      this.cpf.trim().length <= 0 ||
-      this.contactId == 0
+      params.name.trim().length <= 0 ||
+      params.rg.trim().length <= 0 ||
+      params.cpf.trim().length <= 0
     )
       return -5;
 
     let result = 0;
 
-    const parameters = [
-      this.name,
-      this.rg,
-      this.cpf,
-      this.birthDate,
-      this.contactId,
-      this.id,
-    ];
+    const parameters = [params.name, params.rg, params.cpf, params.birthDate, this.id];
 
     const query = new QueryBuilder()
       .update('pessoa_fisica')
-      .set('pf_nome = ?, pf_rg = ?, pf_cpf = ?, pf_nascimento = ?, ctt_id = ?')
+      .set('pf_nome = ?, pf_rg = ?, pf_cpf = ?, pf_nascimento = ?')
       .where('pf_id = ?')
       .build();
 

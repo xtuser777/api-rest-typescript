@@ -11,6 +11,10 @@ router.get('/desactivate/:id', new EmployeeController().desactivate);
 
 router.get('/reactivate/:id', new EmployeeController().reactivate);
 
+router.post('/', new EmployeeController().store);
+
+router.put('/:id', new EmployeeController().update);
+
 router.delete('/:id', new EmployeeController().delete);
 
 export default router;
