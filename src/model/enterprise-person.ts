@@ -103,18 +103,17 @@ export class EnterprisePerson extends Person {
     return result;
   };
 
-  update = async (): Promise<number> => {
+  update = async (params: any): Promise<number> => {
     if (
       this.id <= 0 ||
-      this.corporateName.trim().length <= 0 ||
-      this.fantasyName.trim().length <= 0 ||
-      this.cnpj.trim().length < 18 ||
-      this.contactId == 0
+      params.corporateName.trim().length <= 0 ||
+      params.fantasyName.trim().length <= 0 ||
+      params.cnpj.trim().length < 18
     )
       return -5;
 
     let result = 0;
-    const parameters = [this.corporateName, this.fantasyName, this.id];
+    const parameters = [params.corporateName, params.fantasyName, this.id];
 
     const query = new QueryBuilder()
       .update('pessoa_juridica')
@@ -149,7 +148,7 @@ export class EnterprisePerson extends Person {
     if (fields) {
       if (fields.id) {
         parameters.push(fields.id);
-        builder = builder.where('p.pj_id = ?');
+        builder = builder.where('pj_id = ?');
       }
     }
 

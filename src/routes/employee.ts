@@ -7,10 +7,6 @@ router.get('/', new EmployeeController().index);
 
 router.get('/:id', new EmployeeController().show);
 
-router.get('/desactivate/:id', new EmployeeController().desactivate);
-
-router.get('/reactivate/:id', new EmployeeController().reactivate);
-
 router.post('/', new EmployeeController().store);
 
 router.put('/:id', new EmployeeController().update);

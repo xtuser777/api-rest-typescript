@@ -137,6 +137,7 @@ export class EmployeeController {
   };
 
   store = async (req: Request, res: Response): Promise<Response> => {
+    if (!req.body) return res.status(400).json('requisicao sem corpo.');
     const user = req.body.user;
     const employee = req.body.employee;
     const person = req.body.person;
