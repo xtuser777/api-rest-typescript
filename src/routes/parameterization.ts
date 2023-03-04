@@ -1,12 +1,13 @@
 import { Router } from 'express';
 import { ParameterizationController } from '../controller/parameterization-controller';
+import userAuthenticated from '../middleware/user-authenticated';
 
 const router = Router();
 
-router.get('/', new ParameterizationController().index);
+router.get('/', userAuthenticated, new ParameterizationController().index);
 
-router.post('/', new ParameterizationController().store);
+router.post('/', userAuthenticated, new ParameterizationController().store);
 
-router.put('/', new ParameterizationController().update);
+router.put('/', userAuthenticated, new ParameterizationController().update);
 
 export default router;

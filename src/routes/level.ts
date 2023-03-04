@@ -1,10 +1,11 @@
 import { Router } from 'express';
 import { LevelController } from '../controller/level-controller';
+import userAuthenticated from '../middleware/user-authenticated';
 
 const router = Router();
 
-router.get('/', new LevelController().index);
+router.get('/', userAuthenticated, new LevelController().index);
 
-router.get('/:id', new LevelController().show);
+router.get('/:id', userAuthenticated, new LevelController().show);
 
 export default router;

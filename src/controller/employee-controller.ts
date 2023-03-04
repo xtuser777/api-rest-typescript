@@ -25,8 +25,6 @@ export class EmployeeController {
     return {
       id: user.getId(),
       login: user.getLogin(),
-      password: user.getPassword(),
-      password_hash: user.getPasswordHash(),
       active: user.isActive(),
       employee: {
         id: employee.getId(),

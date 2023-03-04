@@ -1,10 +1,10 @@
 import QueryBuilder from '../util/QueryBuilder';
 import Database from '../util/database';
+import bcryptjs from 'bcryptjs';
 
 interface IFields {
   id?: number;
   login?: string;
-  password?: string;
   active?: boolean;
   filter?: string;
   employeeAdmission?: string;
@@ -30,20 +30,23 @@ export class User {
   getEmployeeId = () => this.employeeId;
   getLevelId = () => this.levelId;
 
+  autenticate = async (password: string) =>
+    bcryptjs.compare(password, this.password_hash);
+
   save = async (): Promise<number> => {
     if (this.id != 0 || this.employeeId === 0 || this.levelId === 0) return -5;
 
     let result = 0;
     const parameters = [
       this.login,
-      this.password,
+      await bcryptjs.hash(this.password, 8),
       this.active,
       this.employeeId,
       this.levelId,
     ];
 
     const query = new QueryBuilder()
-      .insert('usuario', 'usu_login,usu_senha,usu_ativo,fun_id,niv_id', '?,?,?,?,?')
+      .insert('usuario', 'usu_login,usu_senha_hash,usu_ativo,fun_id,niv_id', '?,?,?,?,?')
       .build();
 
     result = await Database.instance.insert(query, parameters);
@@ -55,11 +58,16 @@ export class User {
     if (this.id <= 0 || this.levelId === 0) return -5;
 
     let result = 0;
-    const parameters = [params.login, params.password, params.level, this.id];
+    const parameters = [
+      params.login,
+      await bcryptjs.hash(params.password, 8),
+      params.level,
+      this.id,
+    ];
 
     const query = new QueryBuilder()
       .update('usuario')
-      .set('usu_login = ?,usu_senha = ?,niv_id = ?')
+      .set('usu_login = ?,usu_senha_hash = ?,niv_id = ?')
       .where('usu_id = ?')
       .build();
 
@@ -86,7 +94,7 @@ export class User {
     const parameters = [];
 
     let builder = new QueryBuilder()
-      .select(`u.usu_id,u.usu_login,u.usu_senha,u.usu_ativo,u.fun_id,u.niv_id`)
+      .select(`u.usu_id,u.usu_login,u.usu_senha_hash,u.usu_ativo,u.fun_id,u.niv_id`)
       .from('usuario u')
       .innerJoin('nivel n')
       .on('n.niv_id = u.niv_id')
@@ -103,12 +111,9 @@ export class User {
         builder = builder.where('u.usu_id = ?');
       }
 
-      if (fields.login && fields.password && fields.active) {
-        parameters.push(fields.login, fields.password, fields.active);
-        builder = builder
-          .where('u.usu_login = ?')
-          .and('u.usu_senha = ?')
-          .and('u.usu_ativo = true');
+      if (fields.login) {
+        parameters.push(fields.login);
+        builder = builder.where('u.usu_login = ?').and('u.usu_ativo = true');
       }
 
       if (fields.filter) {
@@ -152,8 +157,8 @@ export class User {
         new User(
           row.usu_id,
           row.usu_login,
-          row.usu_password,
           '',
+          row.usu_senha_hash,
           row.usu_ativo,
           row.fun_id,
           row.niv_id,

@@ -24,12 +24,14 @@
   },
   "homepage": "https://github.com/xtuser777/apt-rest-typescript#readme",
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.2",
+    "@types/cors": "^2.8.13",
+    "@types/express": "^4.17.17",
+    "@types/jsonwebtoken": "^9.0.1",
     "@types/node": "^18.11.9",
     "@types/validator": "^13.7.10",
     "@typescript-eslint/eslint-plugin": "^5.42.0",
     "@typescript-eslint/parser": "^5.42.0",
-    "@types/cors": "^2.8.13",
-    "@types/express": "^4.17.17",
     "eslint": "^8.26.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
@@ -47,6 +49,7 @@
     "express": "~4.17.1",
     "express-session": "^1.17.3",
     "helmet": "^5.1.0",
+    "jsonwebtoken": "^9.0.0",
     "mariadb": "^3.0.2",
     "validator": "^13.7.0"
   }
