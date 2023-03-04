@@ -9,6 +9,7 @@ import level from './routes/level';
 import employee from './routes/employee';
 import parameterization from './routes/parameterization';
 import token from './routes/token';
+import type from './routes/type';
 
 class App {
   private app: express.Express;
@@ -38,6 +39,7 @@ class App {
     this.app.use('/employee', employee);
     this.app.use('/parameterization', parameterization);
     this.app.use('/token', token);
+    this.app.use('/type', type);
   }
 }
 

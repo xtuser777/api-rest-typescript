@@ -44,16 +44,16 @@ export class TruckType {
     return result;
   };
 
-  update = async (): Promise<number> => {
+  update = async (params: any): Promise<number> => {
     if (
       this.id <= 0 ||
-      this.description.trim().length == 0 ||
-      this.axes <= 0 ||
-      this.capacity <= 0
+      params.description.trim().length == 0 ||
+      params.axes <= 0 ||
+      params.capacity <= 0
     )
       return -5;
 
-    const parameters = [this.description, this.axes, this.capacity, this.id];
+    const parameters = [params.description, params.axes, params.capacity, this.id];
 
     const query = new QueryBuilder()
       .update('tipo_caminhao')
@@ -121,9 +121,9 @@ export class TruckType {
     return types;
   };
 
-  dependents = async (id: number): Promise<number> => {
+  dependents = async (): Promise<number> => {
     const query = new QueryBuilder()
-      .select('count(tip_cam_id) as dependents')
+      .select('count(tc.tip_cam_id) as dependents')
       .from('tipo_caminhao tc')
       .innerJoin('produto_tipo_caminhao ptc')
       .on('ptc.tip_cam_id = tc.tip_cam_id')
@@ -132,7 +132,7 @@ export class TruckType {
       .where('tc.tip_cam_id = ?')
       .build();
 
-    const rows = await Database.instance.select(query, [id]);
+    const rows = await Database.instance.select(query, [this.id]);
 
     const dependents = rows[0].dependents;
 

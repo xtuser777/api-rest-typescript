@@ -8,7 +8,6 @@ import { Address } from '../model/address';
 import { City } from '../model/city';
 import { State } from '../model/state';
 import { Level } from '../model/level';
-import { stat } from 'fs';
 
 export class EmployeeController {
   responseBuild = async (user: User): Promise<any> => {
