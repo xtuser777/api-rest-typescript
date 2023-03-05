@@ -10,6 +10,7 @@ import employee from './routes/employee';
 import parameterization from './routes/parameterization';
 import token from './routes/token';
 import type from './routes/type';
+import driver from './routes/driver';
 
 class App {
   private app: express.Express;
@@ -40,6 +41,7 @@ class App {
     this.app.use('/parameterization', parameterization);
     this.app.use('/token', token);
     this.app.use('/type', type);
+    this.app.use('/driver', driver);
   }
 }
 
