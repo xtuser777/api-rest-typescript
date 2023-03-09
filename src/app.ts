@@ -11,6 +11,9 @@ import parameterization from './routes/parameterization';
 import token from './routes/token';
 import type from './routes/type';
 import driver from './routes/driver';
+import proprietary from './routes/proprietary';
+import person from './routes/person';
+import contact from './routes/contact';
 
 class App {
   private app: express.Express;
@@ -25,7 +28,7 @@ class App {
     this.app.listen(port, 'localhost');
   };
 
-  middlewares() {
+  private middlewares() {
     // this.app.use(Cors(corsOptions));
     // this.app.use(Helmet());
     this.app.use(express.urlencoded({ extended: true }));
@@ -33,7 +36,7 @@ class App {
     //this.app.use(express.static(resolve(__dirname, 'uploads')));
   }
 
-  routes() {
+  private routes() {
     this.app.use('/state', state);
     this.app.use('/city', city);
     this.app.use('/level', level);
@@ -42,6 +45,9 @@ class App {
     this.app.use('/token', token);
     this.app.use('/type', type);
     this.app.use('/driver', driver);
+    this.app.use('/proprietary', proprietary);
+    this.app.use('/person', person);
+    this.app.use('/contact', contact);
   }
 }
 

@@ -47,7 +47,6 @@ export default class Driver {
   update = async (params: any): Promise<number> => {
     if (
       this.id <= 0 ||
-      this.register.trim().length == 0 ||
       params.cnh.trim().length <= 0 ||
       this.personId == 0 ||
       this.bankDataId == 0

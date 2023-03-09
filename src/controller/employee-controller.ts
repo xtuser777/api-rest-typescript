@@ -72,7 +72,6 @@ export class EmployeeController {
     if (!req.body) return res.status(400).json('Requisicao sem corpo.');
 
     if (req.body.isLastAdmin) return this.isLastAdmin(req, res);
-    if (req.body.verifyCpf) return this.verifyCpf(req, res);
     if (req.body.loginCheck) return this.loginCheck(req, res);
 
     await Database.instance.open();
@@ -113,14 +112,6 @@ export class EmployeeController {
     console.log(count);
 
     return res.json(count == 1);
-  };
-
-  verifyCpf = (req: Request, res: Response): Response => {
-    const cpf = req.body.verifyCpf;
-
-    const valid = new IndividualPerson().isCpf(cpf);
-
-    return res.json(valid);
   };
 
   loginCheck = async (req: Request, res: Response): Promise<Response> => {

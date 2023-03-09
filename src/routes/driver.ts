@@ -10,8 +10,8 @@ router.get('/:id', userAuthenticated, new DriverController().show);
 
 router.post('/', userAuthenticated, new DriverController().store);
 
-// router.put('/:id', userAuthenticated, new TruckTypeController().update);
+router.put('/:id', userAuthenticated, new DriverController().update);
 
-// router.delete('/:id', userAuthenticated, new TruckTypeController().delete);
+router.delete('/:id', userAuthenticated, new DriverController().delete);
 
 export default router;
