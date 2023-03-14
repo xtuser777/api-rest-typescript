@@ -73,7 +73,6 @@ export class Truck {
   update = async (params: any): Promise<number> => {
     if (
       this.id <= 0 ||
-      params.plate.length <= 0 ||
       params.brand.length <= 0 ||
       params.model.length <= 0 ||
       params.color.length <= 0 ||
@@ -85,7 +84,6 @@ export class Truck {
       return -5;
 
     const parameters = [
-      params.plate,
       params.brand,
       params.model,
       params.color,
@@ -99,7 +97,7 @@ export class Truck {
     const query = new QueryBuilder()
       .update('caminhao')
       .set(
-        'cam_placa = ?,cam_marca = ?,cam_modelo = ?,cam_cor = ?,cam_ano_fabricacao = ?,cam_ano_modelo = ?,tip_cam_id = ?,prp_id = ?',
+        'cam_marca = ?,cam_modelo = ?,cam_cor = ?,cam_ano_fabricacao = ?,cam_ano_modelo = ?,tip_cam_id = ?,prp_id = ?',
       )
       .where('cam_id = ?')
       .build();

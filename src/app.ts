@@ -14,6 +14,7 @@ import driver from './routes/driver';
 import proprietary from './routes/proprietary';
 import person from './routes/person';
 import contact from './routes/contact';
+import truck from './routes/truck';
 
 class App {
   private app: express.Express;
@@ -48,6 +49,7 @@ class App {
     this.app.use('/proprietary', proprietary);
     this.app.use('/person', person);
     this.app.use('/contact', contact);
+    this.app.use('/truck', truck);
   }
 }
 
