@@ -15,6 +15,8 @@ import proprietary from './routes/proprietary';
 import person from './routes/person';
 import contact from './routes/contact';
 import truck from './routes/truck';
+import client from './routes/client';
+import crypt from './routes/crypt';
 
 class App {
   private app: express.Express;
@@ -50,6 +52,8 @@ class App {
     this.app.use('/person', person);
     this.app.use('/contact', contact);
     this.app.use('/truck', truck);
+    this.app.use('/client', client);
+    this.app.use('/crypt', crypt);
   }
 }
 
