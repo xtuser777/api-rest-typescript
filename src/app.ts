@@ -17,6 +17,7 @@ import contact from './routes/contact';
 import truck from './routes/truck';
 import client from './routes/client';
 import crypt from './routes/crypt';
+import representation from './routes/representation';
 
 class App {
   private app: express.Express;
@@ -54,6 +55,7 @@ class App {
     this.app.use('/truck', truck);
     this.app.use('/client', client);
     this.app.use('/crypt', crypt);
+    this.app.use('/representation', representation);
   }
 }
 

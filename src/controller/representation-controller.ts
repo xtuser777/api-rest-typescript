@@ -166,7 +166,46 @@ export class RepresentationController {
       return res.status(400).json('paramentro invalido.');
     }
     await Database.instance.open();
+    const representation = await new Representation().findOne(id);
+    if (!representation) return res.status(400).json('representacao nao existe.');
+    const person = (
+      await new EnterprisePerson().find({ id: representation.getPersonId() })
+    )[0] as EnterprisePerson;
+    const contact = (await new Contact().find({ id: person.getContactId() }))[0];
+    const address = (await new Address().find({ id: contact.getAddressId() }))[0];
     await Database.instance.beginTransaction();
+    const ads = await address.update(req.body.address);
+    if (ads <= 0) {
+      await Database.instance.rollback();
+      await Database.instance.close();
+      if (ads == -10) return res.status(400).json('erro ao atualizar o endereco.');
+      if (ads == -5) return res.status(400).json('campos invalidos no endereco.');
+      if (ads == -1) return res.status(400).json('erro ao conectar ao banco de dados.');
+    }
+    const ctt = await contact.update(req.body.contact);
+    if (ctt <= 0) {
+      await Database.instance.rollback();
+      await Database.instance.close();
+      if (ctt == -10) return res.status(400).json('erro ao atualizar o contato.');
+      if (ctt == -5) return res.status(400).json('campos invalidos no contato.');
+      if (ctt == -1) return res.status(400).json('erro ao conectar ao banco de dados.');
+    }
+    const per = await person.update(req.body.person);
+    if (per <= 0) {
+      await Database.instance.rollback();
+      await Database.instance.close();
+      if (per == -10) return res.status(400).json('erro ao atualizar a pessoa.');
+      if (per == -5) return res.status(400).json('campos invalidos na pessoa.');
+      if (per == -1) return res.status(400).json('erro ao conectar ao banco de dados.');
+    }
+    const rep = await representation.update(req.body.representation);
+    if (rep <= 0) {
+      await Database.instance.rollback();
+      await Database.instance.close();
+      if (rep == -10) return res.status(400).json('erro ao atualizar a representacao.');
+      if (rep == -5) return res.status(400).json('campos invalidos na representacao.');
+      if (rep == -1) return res.status(400).json('erro ao conectar ao banco de dados.');
+    }
     await Database.instance.commit();
     await Database.instance.close();
 
@@ -174,6 +213,53 @@ export class RepresentationController {
   };
 
   delete = async (req: Request, res: Response): Promise<Response> => {
+    if (!req.params.id) return res.status(400).json('paramentro ausente.');
+    let id = 0;
+    try {
+      id = Number.parseInt(req.params.id);
+    } catch {
+      return res.status(400).json('paramentro invalido.');
+    }
+    await Database.instance.open();
+    const representation = await new Representation().findOne(id);
+    if (!representation) return res.status(400).json('representacao nao existe.');
+    const person = (
+      await new EnterprisePerson().find({ id: representation.getPersonId() })
+    )[0] as EnterprisePerson;
+    const contact = (await new Contact().find({ id: person.getContactId() }))[0];
+    const address = (await new Address().find({ id: contact.getAddressId() }))[0];
+    await Database.instance.beginTransaction();
+    const rep = await representation.delete();
+    if (rep <= 0) {
+      await Database.instance.rollback();
+      await Database.instance.close();
+      if (rep == -10) return res.status(400).json('erro ao remover a representacao.');
+      if (rep == -1) return res.status(400).json('erro ao conectar ao banco de dados.');
+    }
+    const per = await person.delete();
+    if (per <= 0) {
+      await Database.instance.rollback();
+      await Database.instance.close();
+      if (per == -10) return res.status(400).json('erro ao remover a pessoa.');
+      if (per == -1) return res.status(400).json('erro ao conectar ao banco de dados.');
+    }
+    const ctt = await contact.delete();
+    if (ctt <= 0) {
+      await Database.instance.rollback();
+      await Database.instance.close();
+      if (ctt == -10) return res.status(400).json('erro ao remover o contato.');
+      if (ctt == -1) return res.status(400).json('erro ao conectar ao banco de dados.');
+    }
+    const ads = await contact.delete();
+    if (ads <= 0) {
+      await Database.instance.rollback();
+      await Database.instance.close();
+      if (ads == -10) return res.status(400).json('erro ao remover o endereco.');
+      if (ads == -1) return res.status(400).json('erro ao conectar ao banco de dados.');
+    }
+    await Database.instance.commit();
+    await Database.instance.close();
+
     return res.json('');
   };
 }

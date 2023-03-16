@@ -41,11 +41,11 @@ export class Representation {
     return Number.parseInt(result.toString());
   };
 
-  update = async (): Promise<number> => {
-    if (this.id <= 0 || this.unity.trim() === '') return -5;
+  update = async (params: any): Promise<number> => {
+    if (this.id <= 0 || params.unity.trim() === '') return -5;
 
     let result = 0;
-    const parameters = [this.unity, this.id];
+    const parameters = [params.unity, this.id];
 
     const query = new QueryBuilder()
       .update('representacao')
