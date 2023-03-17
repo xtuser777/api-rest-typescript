@@ -9,6 +9,11 @@ interface IFields {
   orderBy?: string;
 }
 
+interface ITypesFields {
+  filter?: string;
+  orderBy?: string;
+}
+
 export class Product {
   constructor(
     private id: number = 0,
@@ -68,7 +73,7 @@ export class Product {
       .insert('produto_tipo_caminhao', 'pro_id,tip_cam_id', '?,?')
       .build();
 
-    const result = await Database.instance.insert(query, [type]);
+    const result = await Database.instance.insert(query, [this.id, type]);
 
     return result;
   };
@@ -205,20 +210,31 @@ export class Product {
     return products;
   };
 
-  getTypes = async (product: number): Promise<TruckType[]> => {
+  getTypes = async (fields?: ITypesFields): Promise<TruckType[]> => {
     const types: TruckType[] = [];
+    const parameters: (number | string)[] = [this.id];
 
-    const query = new QueryBuilder()
+    let builder = new QueryBuilder()
       .select(
         'tc.tip_cam_id, tc.tip_cam_descricao, tc.tip_cam_eixos, tc.tip_cam_capacidade',
       )
       .from('tipo_caminhao tc')
       .innerJoin('produto_tipo_caminhao ptc')
       .on('ptc.tip_cam_id = tc.tip_cam_id')
-      .where('ptc.pro_id = ?')
-      .build();
+      .where('ptc.pro_id = ?');
 
-    const rows = await Database.instance.select(query, [product]);
+    if (fields) {
+      if (fields.filter) {
+        parameters.push(`%${fields.filter}%`);
+        builder = builder.and('tc.tip_cam_descricao like ?');
+      }
+
+      if (fields.orderBy) builder = builder.orderBy('tc.' + fields.orderBy);
+    }
+
+    const query = builder.build();
+
+    const rows = await Database.instance.select(query, parameters);
 
     for (const row of rows) {
       types.push(
