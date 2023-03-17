@@ -69,7 +69,8 @@ export class ClientController {
       address.street,
       address.number,
       address.neighborhood,
-      address.complement.address.code,
+      address.complement,
+      address.code,
       address.city,
     ).save();
     if (ads <= 0) {

@@ -10,7 +10,7 @@ import { State } from '../model/state';
 export class RepresentationController {
   responseBuild = async (representation: Representation): Promise<any> => {
     const person = (
-      await new EnterprisePerson().find({ id: representation.getId() })
+      await new EnterprisePerson().find({ id: representation.getPersonId() })
     )[0] as EnterprisePerson;
     const contact = (await new Contact().find({ id: person.getContactId() }))[0];
     const address = (await new Address().find({ id: contact.getAddressId() }))[0];
@@ -250,7 +250,7 @@ export class RepresentationController {
       if (ctt == -10) return res.status(400).json('erro ao remover o contato.');
       if (ctt == -1) return res.status(400).json('erro ao conectar ao banco de dados.');
     }
-    const ads = await contact.delete();
+    const ads = await address.delete();
     if (ads <= 0) {
       await Database.instance.rollback();
       await Database.instance.close();
