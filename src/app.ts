@@ -18,6 +18,7 @@ import truck from './routes/truck';
 import client from './routes/client';
 import crypt from './routes/crypt';
 import representation from './routes/representation';
+import product from './routes/product';
 
 class App {
   private app: express.Express;
@@ -56,6 +57,7 @@ class App {
     this.app.use('/client', client);
     this.app.use('/crypt', crypt);
     this.app.use('/representation', representation);
+    this.app.use('/product', product);
   }
 }
 

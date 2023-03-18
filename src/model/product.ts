@@ -85,7 +85,7 @@ export class Product {
       params.measure.trim().length <= 0 ||
       params.weight <= 0 ||
       params.price <= 0 ||
-      params.representationId == 0
+      params.representation == 0
     )
       return -5;
 
@@ -95,7 +95,7 @@ export class Product {
       params.weight,
       params.price,
       params.priceOut,
-      params.representationId,
+      params.representation,
       this.id,
     ];
 

@@ -15,9 +15,9 @@ export class ProductController {
       id: product.getId(),
       description: product.getDescription(),
       measure: product.getMeasure(),
-      weight: product.getWeight(),
-      price: product.getPrice(),
-      priceOut: product.getPriceOut(),
+      weight: Number.parseFloat(product.getWeight().toString()),
+      price: Number.parseFloat(product.getPrice().toString()),
+      priceOut: Number.parseFloat(product.getPriceOut().toString()),
       representation: !representation
         ? undefined
         : await new RepresentationController().responseBuild(representation),
@@ -205,7 +205,7 @@ export class ProductController {
       return res.status(400).json('produto nao existe.');
     }
     await Database.instance.beginTransaction();
-    const typ = await product.saveType(Number.parseInt(req.body.type));
+    const typ = await product.delType(Number.parseInt(req.body.type));
     if (typ < 0) {
       await Database.instance.rollback();
       await Database.instance.close();
