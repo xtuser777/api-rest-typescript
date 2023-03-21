@@ -29,7 +29,6 @@ export default class Database {
         password: process.env.DATABASE_PASSWORD,
         database: process.env.DATABASE_SCHEMA,
         charset: process.env.DATABASE_CHARSET,
-        connectionLimit: 5,
       });
       this._connection.conn = await this._pool.getConnection();
       this._connection.open = true;
