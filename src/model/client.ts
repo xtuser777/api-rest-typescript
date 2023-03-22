@@ -133,17 +133,7 @@ export class Client {
     const parameters = [];
 
     let builder = new QueryBuilder()
-      .select(
-        `
-      e.est_id, e.est_nome, e.est_sigla,
-      c.cid_id, c.cid_nome,
-      en.end_id, en.end_rua, en.end_numero, en.end_bairro, en.end_complemento, en.end_cep,
-      ct.ctt_id, ct.ctt_telefone, ct.ctt_celular, ct.ctt_email,
-      pf.pf_id, pf.pf_nome, pf.pf_rg, pf.pf_cpf, pf.pf_nascimento,
-      pj.pj_id, pj.pj_razao_social, pj.pj_nome_fantasia, pj.pj_cnpj,
-      cl.cli_id,cl.cli_cadastro,cl.cli_tipo
-    `,
-      )
+      .select(`cl.cli_id,cl.cli_cadastro,cl.cli_tipo,cpf.pf_id,cpj.pj_id`)
       .from('cliente cl')
       .leftJoin('cliente_pessoa_fisica cpf')
       .on('cl.cli_id = cpf.cli_id')
@@ -154,13 +144,7 @@ export class Client {
       .leftJoin('pessoa_juridica pj')
       .on('cpj.pj_id = pj.pj_id')
       .innerJoin('contato ct')
-      .on('ct.ctt_id = pf.ctt_id or ct.ctt_id = pj.ctt_id')
-      .innerJoin('endereco en')
-      .on('en.end_id = ct.end_id')
-      .innerJoin('cidade c')
-      .on('c.cid_id = en.cid_id')
-      .innerJoin('estado e')
-      .on('e.est_id = c.est_id');
+      .on('ct.ctt_id = pf.ctt_id or ct.ctt_id = pj.ctt_id');
 
     if (fields) {
       if (fields.filter) {

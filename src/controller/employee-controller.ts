@@ -10,22 +10,17 @@ import { State } from '../model/state';
 import { Level } from '../model/level';
 
 export class EmployeeController {
-  responseBuild = async (user: User): Promise<any> => {
-    const level = (await new Level().find({ id: user.getLevelId() }))[0];
-    const employee = (await new Employee().find({ id: user.getEmployeeId() }))[0];
-    const person = (
-      await new IndividualPerson().find({ id: employee.getPersonId() })
-    )[0] as IndividualPerson;
-    const contact = (await new Contact().find({ id: person.getContactId() }))[0];
-    const address = (await new Address().find({ id: contact.getAddressId() }))[0];
-    const city = (await new City().find({ id: address.getCityId() }))[0];
-    const state = (await new State().find({ id: city.getStateId() }))[0];
+  responseBuild = async (employee?: Employee, user?: User): Promise<any> => {
+    if (employee) {
+      const person = (
+        await new IndividualPerson().find({ id: employee.getPersonId() })
+      )[0] as IndividualPerson;
+      const contact = (await new Contact().find({ id: person.getContactId() }))[0];
+      const address = (await new Address().find({ id: contact.getAddressId() }))[0];
+      const city = (await new City().find({ id: address.getCityId() }))[0];
+      const state = (await new State().find({ id: city.getStateId() }))[0];
 
-    return {
-      id: user.getId(),
-      login: user.getLogin(),
-      active: user.isActive(),
-      employee: {
+      return {
         id: employee.getId(),
         type: employee.getType(),
         admission: employee.getAdmission(),
@@ -60,12 +55,64 @@ export class EmployeeController {
             },
           },
         },
-      },
-      level: {
-        id: level.getId(),
-        description: level.getDescription(),
-      },
-    };
+      };
+    } else if (user) {
+      const level = (await new Level().find({ id: user.getLevelId() }))[0];
+      const employee = (await new Employee().find({ id: user.getEmployeeId() }))[0];
+      const person = (
+        await new IndividualPerson().find({ id: employee.getPersonId() })
+      )[0] as IndividualPerson;
+      const contact = (await new Contact().find({ id: person.getContactId() }))[0];
+      const address = (await new Address().find({ id: contact.getAddressId() }))[0];
+      const city = (await new City().find({ id: address.getCityId() }))[0];
+      const state = (await new State().find({ id: city.getStateId() }))[0];
+
+      return {
+        id: user.getId(),
+        login: user.getLogin(),
+        active: user.isActive(),
+        employee: {
+          id: employee.getId(),
+          type: employee.getType(),
+          admission: employee.getAdmission(),
+          demission: employee.getDemission(),
+          person: {
+            id: person.getId(),
+            name: person.getName(),
+            rg: person.getRg(),
+            cpf: person.getCpf(),
+            birthDate: person.getBirthDate(),
+            contact: {
+              id: contact.getId(),
+              phone: contact.getPhone(),
+              cellphone: contact.getCellphone(),
+              email: contact.getEmail(),
+              address: {
+                id: address.getId(),
+                street: address.getStreet(),
+                number: address.getNumber(),
+                neighborhood: address.getNeighborhood(),
+                complement: address.getComplement(),
+                code: address.getCode(),
+                city: {
+                  id: city.getId(),
+                  name: city.getName(),
+                  state: {
+                    id: state.getId(),
+                    name: state.getName(),
+                    acronym: state.getAcronym(),
+                  },
+                },
+              },
+            },
+          },
+        },
+        level: {
+          id: level.getId(),
+          description: level.getDescription(),
+        },
+      };
+    } else return undefined;
   };
 
   index = async (req: Request, res: Response): Promise<Response> => {
@@ -80,7 +127,7 @@ export class EmployeeController {
     const response = [];
 
     for (const user of users) {
-      response.push(await this.responseBuild(user));
+      response.push(await this.responseBuild(undefined, user));
     }
 
     await Database.instance.close();
@@ -97,7 +144,7 @@ export class EmployeeController {
 
     const user = (await new User().find({ id }))[0];
 
-    const response = await this.responseBuild(user);
+    const response = await this.responseBuild(undefined, user);
 
     await Database.instance.close();
 
@@ -241,7 +288,7 @@ export class EmployeeController {
     const usu =
       employee.type == 1
         ? await new User(0, user.login, user.password, '', true, emp, user.level).save()
-        : await new User(0, '', '', '', false, emp, user.level).save();
+        : await new User(0, '', '', '', false, emp, 3).save();
     if (usu <= 0) {
       if (usu == -10) {
         await Database.instance.rollback();

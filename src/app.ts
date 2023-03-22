@@ -20,6 +20,7 @@ import crypt from './routes/crypt';
 import representation from './routes/representation';
 import product from './routes/product';
 import paymentForm from './routes/payment-form';
+import saleBudget from './routes/sale-budget';
 
 class App {
   private app: express.Express;
@@ -60,6 +61,7 @@ class App {
     this.app.use('/representation', representation);
     this.app.use('/product', product);
     this.app.use('/payment-form', paymentForm);
+    this.app.use('/sale-budget', saleBudget);
   }
 }
 

@@ -90,6 +90,8 @@ export class SaleBudget {
       )
       .build();
 
+    console.log(parameters);
+
     const result = await Database.instance.insert(query, parameters);
 
     return result;
@@ -200,11 +202,6 @@ export class SaleBudget {
       .from('orcamento_venda');
 
     if (fields) {
-      if (fields.id) {
-        parameters.push(fields.id);
-        builder = builder.where('orc_ven_id = ?');
-      }
-
       if (fields.filter) {
         parameters.push(`%${fields.filter}%`, `%${fields.filter}%`);
         builder = builder

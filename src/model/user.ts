@@ -55,7 +55,7 @@ export class User {
   };
 
   update = async (params: any): Promise<number> => {
-    if (this.id <= 0 || this.levelId === 0) return -5;
+    if (this.id <= 0 || params.level === 0) return -5;
 
     let result = 0;
     const parameters = [
