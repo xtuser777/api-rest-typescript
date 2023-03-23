@@ -9,6 +9,8 @@ import { EmployeeController } from './employee-controller';
 import { ClientController } from './client-controller';
 import { CityController } from './city-controller';
 import { SaleBudgetItem } from '../model/sale-budget-item';
+import { Product } from '../model/product';
+import { ProductController } from './product-controller';
 
 export class SaleBudgetController {
   responseBuild = async (budget: SaleBudget): Promise<any> => {
@@ -40,7 +42,22 @@ export class SaleBudgetController {
     };
   };
 
+  responseBuildItem = async (item: SaleBudgetItem): Promise<any> => {
+    const product = await new Product().findOne(item.getProductId());
+
+    return {
+      budget: item.getBudgetId(),
+      product: !product
+        ? undefined
+        : await new ProductController().responseBuild(product),
+      quantity: item.getQuatity(),
+      weight: item.getWeight(),
+      price: item.getPrice(),
+    };
+  };
+
   index = async (req: Request, res: Response): Promise<Response> => {
+    if (req.body.items) return await this.indexItems(req, res);
     await Database.instance.open();
     const budgets = await new SaleBudget().find(req.body);
     const response = [];
@@ -52,7 +69,27 @@ export class SaleBudgetController {
     return res.json(response);
   };
 
+  indexItems = async (req: Request, res: Response): Promise<Response> => {
+    if (!req.body.items.budget) return res.status(400).json('parametro ausente');
+    let budget = 0;
+    try {
+      budget = Number.parseInt(req.body.items.budget);
+    } catch {
+      return res.status(400).json('parametro invalido');
+    }
+    await Database.instance.open();
+    const items = await new SaleBudgetItem().find(req.body.items);
+    const response = [];
+    for (const item of items) {
+      response.push(await this.responseBuildItem(item));
+    }
+    await Database.instance.close();
+
+    return res.json(response);
+  };
+
   show = async (req: Request, res: Response): Promise<Response> => {
+    if (req.body.item) return await this.showItem(req, res);
     if (!req.params.id) return res.status(400).json('parametro ausente');
     let id = 0;
     try {
@@ -63,6 +100,23 @@ export class SaleBudgetController {
     await Database.instance.open();
     const budget = await new SaleBudget().findOne(id);
     const response = !budget ? undefined : await this.responseBuild(budget);
+    await Database.instance.close();
+
+    return res.json(response);
+  };
+
+  showItem = async (req: Request, res: Response): Promise<Response> => {
+    if (!req.params.id) return res.status(400).json('parametro ausente');
+    if (!req.body.item) return res.status(400).json('parametro ausente');
+    let id = 0;
+    try {
+      id = Number.parseInt(req.params.id);
+    } catch {
+      return res.status(400).json('parametro invalido');
+    }
+    await Database.instance.open();
+    const item = await new SaleBudgetItem().findOne(id, req.body.item);
+    const response = !item ? undefined : await this.responseBuildItem(item);
     await Database.instance.close();
 
     return res.json(response);
@@ -163,7 +217,7 @@ export class SaleBudgetController {
     }
     for (const item of req.body.items) {
       const itm = await new SaleBudgetItem(
-        bgt,
+        id,
         item.product,
         item.quantity,
         item.weight,

@@ -90,8 +90,6 @@ export class SaleBudget {
       )
       .build();
 
-    console.log(parameters);
-
     const result = await Database.instance.insert(query, parameters);
 
     return result;
@@ -108,13 +106,12 @@ export class SaleBudget {
       params.clientEmail.length == 0 ||
       params.value <= 0 ||
       params.weight <= 0 ||
-      params.cityId == 0
+      params.destiny == 0
     )
       return -5;
 
     const parameters = [
       params.description,
-      params.date,
       params.clientName,
       params.clientDocument,
       params.clientPhone,
@@ -123,18 +120,18 @@ export class SaleBudget {
       params.weight,
       params.value,
       params.validate,
-      params.employeeId,
-      params.clientId,
-      params.cityId,
+      params.salesman == 0 ? null : params.salesman,
+      params.client == 0 ? null : params.client,
+      params.destiny,
       this.id,
     ];
 
     const query = new QueryBuilder()
       .update('orcamento_venda')
       .set(
-        `orc_ven_descricao = ?,orc_ven_data = ?,orc_ven_nome_cliente = ?,orc_ven_documento_cliente = ?,
+        `orc_ven_descricao = ?,orc_ven_nome_cliente = ?,orc_ven_documento_cliente = ?,
         orc_ven_telefone_cliente = ?,orc_ven_celular_cliente = ?,orc_ven_email_cliente = ?,orc_ven_peso = ?,
-        orc_ven_valor = ?,orc_ven_validade = ?,fun_id = ?,cli_id = ?,cid_id = ?,usu_id = ?`,
+        orc_ven_valor = ?,orc_ven_validade = ?,fun_id = ?,cli_id = ?,cid_id = ?`,
       )
       .where('orc_ven_id = ?')
       .build();
