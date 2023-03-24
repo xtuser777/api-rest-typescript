@@ -119,7 +119,7 @@ export class FreightBudget {
       params.distance <= 0 ||
       params.value <= 0 ||
       params.weight <= 0 ||
-      params.city == 0 ||
+      params.destiny == 0 ||
       params.truckType == 0
     )
       return -5;
@@ -131,11 +131,11 @@ export class FreightBudget {
       params.value,
       params.shipping,
       params.validate,
-      params.saleBudget == 0 ? null : params.saleBudget,
+      params.sale == 0 ? null : params.sale,
       params.representation == 0 ? null : params.representation,
       params.client,
       params.truckType,
-      params.city,
+      params.destiny,
       this.id,
     ];
 
