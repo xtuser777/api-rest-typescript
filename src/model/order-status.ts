@@ -4,6 +4,7 @@ import QueryBuilder from '../util/QueryBuilder';
 interface IFields {
   order?: number;
   status?: number;
+  current?: boolean;
   orderBy?: string;
 }
 
@@ -117,7 +118,18 @@ export class OrderStatus {
 
       if (fields.status) {
         parameters.push(fields.status);
-        builder = builder.where('sts_id = ?').and('sts_id = ?');
+        builder =
+          parameters.length == 1
+            ? builder.where('sts_id = ?')
+            : builder.and('sts_id = ?');
+      }
+
+      if (fields.current) {
+        parameters.push(fields.current);
+        builder =
+          parameters.length == 1
+            ? builder.where('ped_fre_sts_atual = ?')
+            : builder.and('ped_fre_sts_atual = ?');
       }
 
       if (fields.orderBy) {

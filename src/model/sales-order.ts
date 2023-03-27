@@ -131,6 +131,33 @@ export class SalesOrder {
     return result;
   };
 
+  findOne = async (id: number): Promise<SalesOrder | undefined> => {
+    if (id <= 0) return undefined;
+    const query = new QueryBuilder()
+      .select('*')
+      .from('pedido_venda')
+      .where('ped_ven_id = ?')
+      .build();
+
+    const rows = await Database.instance.select(query, [id]);
+    if (rows.length == 0) return undefined;
+    const row = rows[0];
+
+    return new SalesOrder(
+      row.ped_ven_id,
+      row.ped_ven_data,
+      row.ped_ven_descricao,
+      row.ped_ven_peso,
+      row.ped_ven_valor,
+      !row.fun_id ? 0 : row.fun_id,
+      row.cid_id,
+      !row.orc_ven_id ? 0 : row.orc_ven_id,
+      row.cli_id,
+      row.for_pag_id,
+      row.usu_id,
+    );
+  };
+
   find = async (fields?: IFields): Promise<SalesOrder[]> => {
     const orders: SalesOrder[] = [];
     const parameters = [];
