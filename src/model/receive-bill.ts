@@ -55,6 +55,8 @@ export class ReceiveBill {
   getFreightOrderId = () => this.freightOrderId;
   getUserId = () => this.userId;
 
+  setId = (id: number) => (this.id = id);
+
   save = async (): Promise<number> => {
     if (
       this.id != 0 ||
