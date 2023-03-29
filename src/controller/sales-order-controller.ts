@@ -3,7 +3,6 @@ import { BillPay } from '../model/bill-pay';
 import { City } from '../model/city';
 import { Client } from '../model/client';
 import { Employee } from '../model/employee';
-import { FreightOrderItem } from '../model/freight-order-item';
 import { IndividualPerson } from '../model/individual-person';
 import { PaymentForm } from '../model/payment-form';
 import { ReceiveBill } from '../model/receive-bill';
@@ -19,6 +18,7 @@ import { EmployeeController } from './employee-controller';
 import { PaymentFormController } from './payment-form-controller';
 import { SaleBudgetController } from './sale-budget-controller';
 import { TruckTypeController } from './truck-type-controller';
+import { Event } from '../model/event';
 
 export class SalesOrderController {
   responseBuild = async (order: SalesOrder): Promise<any> => {
@@ -88,18 +88,18 @@ export class SalesOrderController {
     await Database.instance.open();
     await Database.instance.beginTransaction();
     const ord = await new SalesOrder(
-      order.ped_ved_id,
-      order.ped_ven_data,
-      order.ped_ven_descricao,
-      order.ped_ven_peso,
-      order.ped_ven_valor,
-      order.fun_id,
-      order.cid_id,
-      order.orc_ven_id,
-      order.tip_cam_id,
-      order.cli_id,
-      order.for_pag_id,
-      order.usu_id,
+      0,
+      order.date,
+      order.description,
+      order.weight,
+      order.value,
+      order.salesman,
+      order.city,
+      order.budget,
+      order.truckType,
+      order.client,
+      order.paymentForm,
+      order.author,
     ).save();
     if (ord <= 0) {
       await Database.instance.rollback();
@@ -127,6 +127,32 @@ export class SalesOrderController {
         if (itm == -5) return res.status(400).json('campos incorretos no item');
         if (itm == -1) return res.status(400).json('erro de conexao no banco');
       }
+    }
+    const responseBill = await this.releaseBill(
+      ord,
+      order.salesman,
+      order.paymentForm,
+      order.client,
+      order.author,
+      order.value,
+      order.value,
+      order.salesmanComissionPorcent,
+      order.comissions,
+    );
+    if (responseBill <= 0) {
+      await Database.instance.beginTransaction();
+      await Database.instance.close();
+      if (responseBill == -10) return res.status(400).json('erro ao lancar as contas');
+      if (responseBill == -5) return res.status(400).json('campos incorretos nas contas');
+      if (responseBill == -1) return res.status(400).json('erro ao conectar ao banco');
+    }
+    const responseEvent = await this.createEvent(ord, order.description, order.author);
+    if (responseEvent <= 0) {
+      await Database.instance.beginTransaction();
+      await Database.instance.close();
+      if (responseEvent == -10) return res.status(400).json('erro ao lancar o evento');
+      if (responseEvent == -5) return res.status(400).json('campos incorretos no evento');
+      if (responseEvent == -1) return res.status(400).json('erro ao conectar ao banco');
     }
     await Database.instance.commit();
     await Database.instance.close();
@@ -260,6 +286,26 @@ export class SalesOrderController {
       order,
       0,
       author,
+    ).save();
+
+    return response;
+  };
+
+  private createEvent = async (
+    order: number,
+    orderDescription: string,
+    user: number,
+  ): Promise<number> => {
+    if (order <= 0 || orderDescription.length == 0 || user <= 0) return -5;
+
+    const response = await new Event(
+      0,
+      `Abertura do pedido de venda ${order}: ${orderDescription}`,
+      new Date(),
+      new Date(),
+      order,
+      0,
+      user,
     ).save();
 
     return response;
