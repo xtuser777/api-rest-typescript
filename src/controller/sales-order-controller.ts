@@ -20,6 +20,7 @@ import { SaleBudgetController } from './sale-budget-controller';
 import { TruckTypeController } from './truck-type-controller';
 import { Event } from '../model/event';
 import { FreightOrder } from '../model/freight-order';
+import { EnterprisePerson } from '../model/enterprise-person';
 
 export class SalesOrderController {
   responseBuild = async (order: SalesOrder): Promise<any> => {
@@ -95,7 +96,7 @@ export class SalesOrderController {
       order.weight,
       order.value,
       order.salesman,
-      order.city,
+      order.destiny,
       order.budget,
       order.truckType,
       order.client,
@@ -116,10 +117,10 @@ export class SalesOrderController {
     }
     for (const item of items) {
       const itm = await new SalesOrderItem(
-        item.pro_id,
-        item.ped_ved_pro_quantidade,
-        item.ped_ven_pro_valor,
-        item.ped_ven_pro_peso,
+        item.product,
+        item.quantity,
+        item.price,
+        item.weight,
       ).save(ord);
       if (itm < 0) {
         await Database.instance.rollback();
@@ -147,7 +148,7 @@ export class SalesOrderController {
       if (responseBill == -5) return res.status(400).json('campos incorretos nas contas');
       if (responseBill == -1) return res.status(400).json('erro ao conectar ao banco');
     }
-    const responseEvent = await this.createEvent(ord, order.description, order.author);
+    const responseEvent = await this.createEvent(ord, order.description, order.author, 1);
     if (responseEvent <= 0) {
       await Database.instance.beginTransaction();
       await Database.instance.close();
@@ -187,13 +188,26 @@ export class SalesOrderController {
       const rc = await this.releaseComission(order, comission, author);
       if (rc) return rc;
     }
+    const cli = await new Client().findOne(client);
+    const individual =
+      cli?.getType() == 1
+        ? ((
+            await new IndividualPerson().find({ id: cli.getPersonId() })
+          )[0] as IndividualPerson)
+        : undefined;
+    const enterprise =
+      cli?.getType() == 2
+        ? ((
+            await new EnterprisePerson().find({ id: cli?.getPersonId() })
+          )[0] as EnterprisePerson)
+        : undefined;
 
     const bill = new ReceiveBill(
       0,
       new Date(),
       await new ReceiveBill().getNewBill(),
       `Recebimento pedido: ${order}`,
-      '',
+      cli?.getType() == 1 ? individual?.getName() : enterprise?.getFantasyName(),
       amount,
       false,
       1,
@@ -216,7 +230,7 @@ export class SalesOrderController {
     const responseReceive = await bill.receive(
       form,
       amountReceived,
-      new Date().toISOString(),
+      new Date().toISOString().substring(0, 10),
       3,
       0,
     );
@@ -292,26 +306,6 @@ export class SalesOrderController {
     return response;
   };
 
-  private createEvent = async (
-    order: number,
-    orderDescription: string,
-    user: number,
-  ): Promise<number> => {
-    if (order <= 0 || orderDescription.length == 0 || user <= 0) return -5;
-
-    const response = await new Event(
-      0,
-      `Abertura do pedido de venda ${order}: ${orderDescription}`,
-      new Date(),
-      new Date(),
-      order,
-      0,
-      user,
-    ).save();
-
-    return response;
-  };
-
   delete = async (req: Request, res: Response): Promise<Response> => {
     if (!req.params.id) return res.status(400).json('parametro ausente.');
     let id = 0;
@@ -352,6 +346,29 @@ export class SalesOrderController {
           );
       if (responseBills == -5)
         return res.status(400).json('Algum parâmetro foi passado incorretamente.');
+    }
+    if (!this.deleteItems(id))
+      return res.status(400).json('Erro ao excluir os itens do pedido.');
+    const responseOrder = await order.delete();
+    if (responseOrder <= 0) {
+      await Database.instance.beginTransaction();
+      await Database.instance.close();
+      if (responseOrder == -10) return res.status(400).json('erro ao remover o pedido.');
+      if (responseOrder == -5) return res.status(400).json('campos inválidos pedido.');
+      if (responseOrder == -1) return res.status(400).json('erro de conexao ao banco.');
+    }
+    const responseEvent = await this.createEvent(
+      id,
+      order.getDescription(),
+      order.getUserId(),
+      2,
+    );
+    if (responseEvent <= 0) {
+      await Database.instance.beginTransaction();
+      await Database.instance.close();
+      if (responseEvent == -10) return res.status(400).json('erro ao criar o evento.');
+      if (responseEvent == -5) return res.status(400).json('campos inválidos evento.');
+      if (responseEvent == -1) return res.status(400).json('erro de conexao ao banco.');
     }
     await Database.instance.commit();
     await Database.instance.close();
@@ -403,6 +420,29 @@ export class SalesOrderController {
       response = await comission.delete();
       if (response < 0) return response;
     }
+
+    return response;
+  };
+
+  private createEvent = async (
+    order: number,
+    orderDescription: string,
+    user: number,
+    method: number,
+  ): Promise<number> => {
+    if (order <= 0 || orderDescription.length == 0 || user <= 0) return -5;
+
+    const response = await new Event(
+      0,
+      method == 1
+        ? `Abertura do pedido de venda ${order}: ${orderDescription}`
+        : `O pedido de venda ${order} foi deletado.`,
+      new Date(),
+      new Date(),
+      order,
+      0,
+      user,
+    ).save();
 
     return response;
   };

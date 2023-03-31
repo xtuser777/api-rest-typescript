@@ -22,6 +22,7 @@ import product from './routes/product';
 import paymentForm from './routes/payment-form';
 import saleBudget from './routes/sale-budget';
 import freightBudget from './routes/freight-budget';
+import salesOrder from './routes/sales-order';
 
 class App {
   private app: express.Express;
@@ -64,6 +65,7 @@ class App {
     this.app.use('/payment-form', paymentForm);
     this.app.use('/sale-budget', saleBudget);
     this.app.use('/freight-budget', freightBudget);
+    this.app.use('/sales-order', salesOrder);
   }
 }
 
