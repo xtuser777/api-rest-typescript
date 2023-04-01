@@ -23,6 +23,7 @@ import { FreightOrder } from '../model/freight-order';
 import { EnterprisePerson } from '../model/enterprise-person';
 import { Product } from '../model/product';
 import { ProductController } from './product-controller';
+import { ActiveUser } from '../util/active-user';
 
 export class SalesOrderController {
   responseBuild = async (order: SalesOrder): Promise<any> => {
@@ -193,7 +194,7 @@ export class SalesOrderController {
       if (responseBill == -5) return res.status(400).json('campos incorretos nas contas');
       if (responseBill == -1) return res.status(400).json('erro ao conectar ao banco');
     }
-    const responseEvent = await this.createEvent(ord, order.description, order.author, 1);
+    const responseEvent = await this.createEvent(ord, order.description, 1);
     if (responseEvent <= 0) {
       await Database.instance.beginTransaction();
       await Database.instance.close();
@@ -396,20 +397,15 @@ export class SalesOrderController {
       return res.status(400).json('Erro ao excluir os itens do pedido.');
     const responseOrder = await order.delete();
     if (responseOrder <= 0) {
-      await Database.instance.beginTransaction();
+      await Database.instance.rollback();
       await Database.instance.close();
       if (responseOrder == -10) return res.status(400).json('erro ao remover o pedido.');
       if (responseOrder == -5) return res.status(400).json('campos inválidos pedido.');
       if (responseOrder == -1) return res.status(400).json('erro de conexao ao banco.');
     }
-    const responseEvent = await this.createEvent(
-      id,
-      order.getDescription(),
-      order.getUserId(),
-      2,
-    );
+    const responseEvent = await this.createEvent(id, order.getDescription(), 2);
     if (responseEvent <= 0) {
-      await Database.instance.beginTransaction();
+      await Database.instance.rollback();
       await Database.instance.close();
       if (responseEvent == -10) return res.status(400).json('erro ao criar o evento.');
       if (responseEvent == -5) return res.status(400).json('campos inválidos evento.');
@@ -478,9 +474,12 @@ export class SalesOrderController {
   private createEvent = async (
     order: number,
     orderDescription: string,
-    user: number,
     method: number,
   ): Promise<number> => {
+    const activeUser = ActiveUser.getInstance() as ActiveUser;
+    const user = activeUser.getId();
+    console.log(order, orderDescription, user, method);
+
     if (order <= 0 || orderDescription.length == 0 || user <= 0) return -5;
 
     const response = await new Event(
