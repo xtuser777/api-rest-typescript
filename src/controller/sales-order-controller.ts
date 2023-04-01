@@ -21,6 +21,8 @@ import { TruckTypeController } from './truck-type-controller';
 import { Event } from '../model/event';
 import { FreightOrder } from '../model/freight-order';
 import { EnterprisePerson } from '../model/enterprise-person';
+import { Product } from '../model/product';
+import { ProductController } from './product-controller';
 
 export class SalesOrderController {
   responseBuild = async (order: SalesOrder): Promise<any> => {
@@ -54,7 +56,19 @@ export class SalesOrderController {
     };
   };
 
+  responseBuildItem = async (item: SalesOrderItem): Promise<any> => {
+    const p = await new Product().findOne(item.getProductId());
+
+    return {
+      product: !p ? undefined : await new ProductController().responseBuild(p),
+      quantity: item.getQuantity(),
+      weight: item.getWeight(),
+      price: item.getPrice(),
+    };
+  };
+
   index = async (req: Request, res: Response): Promise<Response> => {
+    if (req.body.items) return await this.indexItems(req, res);
     await Database.instance.open();
     const orders = await new SalesOrder().find(req.body);
     const response = [];
@@ -66,7 +80,20 @@ export class SalesOrderController {
     return res.json(response);
   };
 
+  indexItems = async (req: Request, res: Response): Promise<Response> => {
+    await Database.instance.open();
+    const items = await new SalesOrderItem().find(req.body.items);
+    const response = [];
+    for (const item of items) {
+      response.push(await this.responseBuildItem(item));
+    }
+    await Database.instance.close();
+
+    return res.json(response);
+  };
+
   show = async (req: Request, res: Response): Promise<Response> => {
+    if (req.body.item) return await this.showItem(req, res);
     if (!req.params.id) return res.status(400).json('parametro ausente.');
     let id = 0;
     try {
@@ -77,6 +104,24 @@ export class SalesOrderController {
     await Database.instance.open();
     const order = await new SalesOrder().findOne(id);
     const response = !order ? undefined : await this.responseBuild(order);
+    await Database.instance.close();
+
+    return res.json(response);
+  };
+
+  showItem = async (req: Request, res: Response): Promise<Response> => {
+    if (!req.params.id) return res.status(400).json('parametro ausente.');
+    let id = 0;
+    let product = 0;
+    try {
+      id = Number.parseInt(req.params.id);
+      product = Number.parseInt(req.body.item);
+    } catch {
+      return res.status(400).json('parametro invalido.');
+    }
+    await Database.instance.open();
+    const item = await new SalesOrderItem().findOne(id, product);
+    const response = !item ? undefined : await this.responseBuildItem(item);
     await Database.instance.close();
 
     return res.json(response);
@@ -342,7 +387,7 @@ export class SalesOrderController {
         return res
           .status(400)
           .json(
-            'Ocorreram problemas na exclusão das comissões do pedido ou algum registronão foi encontrado.',
+            'Ocorreram problemas na exclusão das comissões do pedido ou algum registro não foi encontrado.',
           );
       if (responseBills == -5)
         return res.status(400).json('Algum parâmetro foi passado incorretamente.');
@@ -381,6 +426,8 @@ export class SalesOrderController {
     if (items.length == 0) return true;
     for (const item of items) {
       const response = await item.delete(order);
+      console.log(response);
+
       if (response < 0) {
         await Database.instance.rollback();
         await Database.instance.close();
@@ -396,6 +443,8 @@ export class SalesOrderController {
     if (order <= 0) return -5;
     const orderReceive = (await new ReceiveBill().find({ sale: order }))[0];
     if (!orderReceive) return -10;
+    console.log(1);
+
     if (orderReceive.getPendencyId() > 0) {
       const pend = await new ReceiveBill().findOne(orderReceive.getPendencyId());
       if (pend) {
@@ -406,6 +455,8 @@ export class SalesOrderController {
     }
     response = await orderReceive.delete();
     if (response < 0) return response;
+    console.log(2);
+
     if (salesman > 0) {
       const salesmanComission = (await new BillPay().find({ saleComissioned: order }))[0];
       if (!salesmanComission) return -10;
@@ -414,7 +465,7 @@ export class SalesOrderController {
       if (response < 0) return response;
     }
     const comissions = await new ReceiveBill().find({ sale: order });
-    if (!comissions || comissions.length == 0) return -10;
+    if (!comissions) return -10;
     for (const comission of comissions) {
       if (comission.getSituation() > 1) return -15;
       response = await comission.delete();

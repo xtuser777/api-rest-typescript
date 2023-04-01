@@ -206,7 +206,11 @@ export class FreightOrder {
     const parameters = [];
 
     let builder = new QueryBuilder()
-      .select('*')
+      .select(
+        `pfr.ped_fre_id,pfr.ped_fre_data,pfr.ped_fre_descricao,pfr.ped_fre_distancia,pfr.ped_fre_peso,pfr.ped_fre_valor,pfr.ped_fre_valor_motorista,pfr.
+      ped_fre_entrada_motorista,pfr.ped_fre_entrega,pfr.orc_fre_id,pfr.ped_ven_id,pfr.rep_id,pfr.cli_id,pfr.cid_id,pfr.tip_cam_id,pfr.
+      cam_id,pfr.prp_id,pfr.mot_id,pfr.for_pag_fre,pfr.for_pag_mot,pfr.usu_id`,
+      )
       .from('pedido_frete pfr')
       .innerJoin('pedido_frete_status pfs')
       .on('pfr.ped_fre_id = pfs.ped_fre_id')

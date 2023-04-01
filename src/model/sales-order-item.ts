@@ -100,11 +100,13 @@ export class SalesOrderItem {
     const rows = await Database.instance.select(query, parameters);
 
     for (const row of rows) {
-      new SalesOrderItem(
-        row.pro_id,
-        row.ped_ven_pro_quantidade,
-        row.ped_ven_pro_valor,
-        row.ped_ven_pro_peso,
+      items.push(
+        new SalesOrderItem(
+          row.pro_id,
+          row.ped_ven_pro_quantidade,
+          row.ped_ven_pro_valor,
+          row.ped_ven_pro_peso,
+        ),
       );
     }
 

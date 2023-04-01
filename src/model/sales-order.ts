@@ -123,7 +123,7 @@ export class SalesOrder {
 
     const query = new QueryBuilder()
       .delete('pedido_venda')
-      .where('ped_ved_id = ?')
+      .where('ped_ven_id = ?')
       .build();
 
     const result = await Database.instance.delete(query, [this.id]);
