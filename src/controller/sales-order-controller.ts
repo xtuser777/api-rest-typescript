@@ -392,7 +392,7 @@ export class SalesOrderController {
       if (responseBills == -5)
         return res.status(400).json('Algum parâmetro foi passado incorretamente.');
     }
-    if (!this.deleteItems(id))
+    if (!(await this.deleteItems(id)))
       return res.status(400).json('Erro ao excluir os itens do pedido.');
     const responseOrder = await order.delete();
     if (responseOrder <= 0) {
