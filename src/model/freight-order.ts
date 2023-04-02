@@ -62,6 +62,8 @@ export class FreightOrder {
   getPaymentFormDriverId = () => this.paymentFormDriverId;
   getUserId = () => this.userId;
 
+  setId = (id: number) => (this.id = id);
+
   calculateMinimumFloor = (km: number, axes: number): number => {
     let floor = 0.0;
 
