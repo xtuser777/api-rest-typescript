@@ -611,7 +611,8 @@ export class FreightOrderController {
 
   deleteProprietaryBill = async (order: number): Promise<number> => {
     if (order <= 0) return -5;
-    const bill = (await new BillPay().find({ freight: order }))[0];
+    const bills = await new BillPay().find({ freight: order });
+    const bill = bills[0];
     if (!bill) return -10;
     if (bill.getSituation() > 1) return -15;
 
@@ -620,7 +621,7 @@ export class FreightOrderController {
 
   deleteOrderBill = async (order: number): Promise<boolean> => {
     if (order <= 0) return false;
-    const bill = (await new BillPay().find({ freight: order }))[0];
+    const bill = (await new ReceiveBill().find({ freight: order }))[0];
     if (!bill) return true;
     const r = await bill.delete();
     if (r < 0) {

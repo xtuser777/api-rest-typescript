@@ -269,38 +269,36 @@ export class BillPay {
     const rows = await Database.instance.select(query, parameters);
 
     for (const row of rows) {
-      bills.push(new BillPay().convertRow(row));
+      bills.push(await this.convertRow(row));
     }
 
     return bills;
   };
 
-  private convertRow = (row: any): BillPay => {
-    this.id = row.con_pag_id;
-    this.bill = row.con_pag_conta;
-    this.date = new Date(row.con_pag_data);
-    this.type = row.con_pag_tipo;
-    this.description = row.con_pag_descricao;
-    this.enterprise = row.con_pag_empresa;
-    this.installment = row.con_pag_parcela;
-    this.amount = row.con_pag_valor;
-    this.comission = row.con_pag_comissao;
-    this.situation = row.con_pag_situacao;
-    this.dueDate = new Date(row.con_pag_vencimento);
-    this.paymentDate = row.con_pag_data_pagamento
-      ? new Date(row.con_pag_data_pagamento)
-      : undefined;
-    this.amountPaid = row.con_pag_valor_pago ? row.con_pag_valor_pago : 0.0;
-    this.pendencyId = row.con_pag_pendencia ? row.con_pag_pendencia : 0;
-    this.paymentFormId = row.for_pag_id ? row.for_pag_id : 0;
-    this.driverId = row.mot_id ? row.mot_id : 0;
-    this.employeeId = row.fun_id ? row.fun_id : 0;
-    this.categoryId = row.cat_con_pag_id;
-    this.freightOrderId = row.ped_fre_id ? row.ped_fre_id : 0;
-    this.salesOrderId = row.ped_ven_id ? row.ped_ven_id : 0;
-    this.userId = row.usu_id;
-
-    return this;
+  private convertRow = async (row: any): Promise<BillPay> => {
+    return new BillPay(
+      row.con_pag_id,
+      row.con_pag_conta,
+      new Date(row.con_pag_data),
+      row.con_pag_tipo,
+      row.con_pag_descricao,
+      row.con_pag_empresa,
+      row.con_pag_parcela,
+      row.con_pag_valor,
+      row.con_pag_comissao,
+      row.con_pag_situacao,
+      new Date(row.con_pag_vencimento),
+      row.con_pag_data_pagamento ? new Date(row.con_pag_data_pagamento) : undefined,
+      row.con_pag_valor_pago ? row.con_pag_valor_pago : 0.0,
+      row.con_pag_pendencia ? row.con_pag_pendencia : 0,
+      row.for_pag_id ? row.for_pag_id : 0,
+      row.mot_id ? row.mot_id : 0,
+      row.fun_id ? row.fun_id : 0,
+      row.cat_con_pag_id,
+      row.ped_fre_id ? row.ped_fre_id : 0,
+      row.ped_ven_id ? row.ped_ven_id : 0,
+      row.usu_id,
+    );
   };
 
   getNewBill = async (): Promise<number> => {

@@ -58,7 +58,7 @@ export class FreightOrderItem {
     if (order <= 0 || product <= 0) return undefined;
     const query = new QueryBuilder()
       .select('*')
-      .from('pedido_venda_produto')
+      .from('pedido_frete_produto')
       .where('ped_fre_id = ?')
       .and('pro_id = ?')
       .build();

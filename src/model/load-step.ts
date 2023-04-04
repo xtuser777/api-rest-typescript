@@ -103,7 +103,10 @@ export class LoadStep {
     if (fields) {
       if (fields.order) {
         parameters.push(fields.order);
-        builder = builder.where('ped_fre_id = ?').and('ped_fre_id = ?');
+        builder =
+          parameters.length == 1
+            ? builder.where('ped_fre_id = ?')
+            : builder.and('ped_fre_id = ?');
       }
 
       if (fields.orderBy) builder = builder.orderBy(fields.orderBy);
