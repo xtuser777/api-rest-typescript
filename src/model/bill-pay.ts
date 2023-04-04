@@ -64,7 +64,7 @@ export class BillPay {
 
   save = async (): Promise<number> => {
     if (
-      this.id !== 0 ||
+      this.id != 0 ||
       this.bill <= 0 ||
       this.description.length === 0 ||
       this.enterprise.length === 0 ||

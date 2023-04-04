@@ -33,6 +33,8 @@ import { BillPay } from '../model/bill-pay';
 import { EnterprisePerson } from '../model/enterprise-person';
 import { ReceiveBill } from '../model/receive-bill';
 import { Event } from '../model/event';
+import { Product } from '../model/product';
+import { ProductController } from './product-controller';
 
 export class FreightOrderController {
   responseBuild = async (order: FreightOrder): Promise<any> => {
@@ -98,13 +100,38 @@ export class FreightOrderController {
     };
   };
 
+  responseBuildItem = async (item: FreightOrderItem): Promise<any> => {
+    const product = await new Product().findOne(item.getProductId());
+
+    return {
+      product: !product
+        ? undefined
+        : await new ProductController().responseBuild(product),
+      quantity: item.getQuantity(),
+      weight: item.getWeight(),
+    };
+  };
+
   index = async (req: Request, res: Response): Promise<Response> => {
     if (req.body.floor) return this.minimumFloor(req, res);
+    if (req.body.items) return await this.indexItems(req, res);
     await Database.instance.open();
     const orders = await new FreightOrder().find(req.body);
     const response = [];
     for (const order of orders) {
       response.push(await this.responseBuild(order));
+    }
+    await Database.instance.close();
+
+    return res.json(response);
+  };
+
+  indexItems = async (req: Request, res: Response): Promise<Response> => {
+    await Database.instance.open();
+    const items = await new FreightOrderItem().find(req.body.items);
+    const response = [];
+    for (const item of items) {
+      response.push(await this.responseBuildItem(item));
     }
     await Database.instance.close();
 
@@ -126,6 +153,7 @@ export class FreightOrderController {
   };
 
   show = async (req: Request, res: Response): Promise<Response> => {
+    if (req.body.item) return await this.showItem(req, res);
     if (!req.params.id) return res.status(400).json('parametro ausente');
     let id = 0;
     try {
@@ -141,12 +169,31 @@ export class FreightOrderController {
     return res.json(response);
   };
 
+  showItem = async (req: Request, res: Response): Promise<Response> => {
+    if (!req.params.id) return res.status(400).json('parametro ausente');
+    let id = 0;
+    let product = 0;
+    try {
+      id = Number.parseInt(req.params.id);
+      product = Number.parseInt(req.body.item);
+    } catch {
+      return res.status(400).json('parametro invalido');
+    }
+    await Database.instance.open();
+    const item = await new FreightOrderItem().findOne(id, product);
+    const response = !item ? undefined : await this.responseBuildItem(item);
+    await Database.instance.close();
+
+    return res.json(response);
+  };
+
   store = async (req: Request, res: Response): Promise<Response> => {
     if (Object.keys(req.body).length == 0)
       return res.status(400).json('requisicao sem corpo');
     const order = req.body.order;
     const items = req.body.items;
     const steps = req.body.steps;
+    const activeUser = ActiveUser.getInstance() as ActiveUser;
     await Database.instance.open();
     await Database.instance.beginTransaction();
     const response = await new FreightOrder(
@@ -156,11 +203,11 @@ export class FreightOrderController {
       order.distance,
       order.weight,
       order.value,
-      order.driverAmount,
-      order.driverAmountEntry,
+      order.amountDriver,
+      order.amountDriverEntry,
       order.shipping,
       order.budget,
-      order.sales,
+      order.sale,
       order.representation,
       order.client,
       order.destiny,
@@ -171,7 +218,7 @@ export class FreightOrderController {
       order.status,
       order.paymentFormFreight,
       order.paymentFormDriver,
-      order.author,
+      activeUser.getId(),
     ).save();
     if (response <= 0) {
       await Database.instance.rollback();
@@ -180,7 +227,6 @@ export class FreightOrderController {
       if (response == -5) return res.status(400).json('compos incorretos no pedido');
       if (response == -1) return res.status(400).json('erro conexao banco de dados');
     }
-    order.setId(response);
     if (items.length == 0) {
       await Database.instance.rollback();
       await Database.instance.close();

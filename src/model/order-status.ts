@@ -32,7 +32,6 @@ export class OrderStatus {
       order,
       this.statusId,
       this.date,
-      this.time,
       this.observation,
       this.current,
       this.userId,
@@ -40,7 +39,7 @@ export class OrderStatus {
 
     const query = new QueryBuilder()
       .insert(
-        'status_pedido',
+        'pedido_frete_status',
         'ped_fre_id, sts_id, ped_fre_sts_data, ped_fre_sts_hora, ped_fre_sts_observacoes, ped_fre_sts_atual, usu_id',
         '?,?,?,CURRENT_TIME(),?,?,?',
       )
