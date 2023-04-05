@@ -10,7 +10,6 @@ import { TruckType } from '../model/truck-type';
 import Proprietary from '../model/proprietary';
 import Driver from '../model/driver';
 import { Truck } from '../model/truck';
-import { Status } from '../model/status';
 import { PaymentForm } from '../model/payment-form';
 import { User } from '../model/user';
 import { FreightBudgetController } from './freight-budget-controller';
@@ -35,6 +34,7 @@ import { ReceiveBill } from '../model/receive-bill';
 import { Event } from '../model/event';
 import { Product } from '../model/product';
 import { ProductController } from './product-controller';
+import { OrderStatusController } from './order-status-controller';
 
 export class FreightOrderController {
   responseBuild = async (order: FreightOrder): Promise<any> => {
@@ -49,7 +49,7 @@ export class FreightOrderController {
     const proprietary = await new Proprietary().findOne(order.getProprietaryId());
     const driver = await new Driver().findOne(order.getDriverId());
     const truck = await new Truck().findOne(order.getTruckId());
-    const status = await new Status().findOne(order.getStatusId());
+    const status = await new OrderStatus().findOne(order.getStatusId(), order.getId());
     const paymentFormFreight = await new PaymentForm().findOne(
       order.getPaymentFormFreightId(),
     );
@@ -87,7 +87,9 @@ export class FreightOrderController {
         : await new ProprietaryController().responseBuild(proprietary),
       driver: !driver ? undefined : await new DriverController().responseBuild(driver),
       truck: !truck ? undefined : await new TruckController().responseBuilder(truck),
-      status: !status ? undefined : status,
+      status: !status
+        ? undefined
+        : await new OrderStatusController().responseBuild(status),
       paymentFormFreight: !paymentFormFreight
         ? undefined
         : new PaymentFormController().responseBuild(paymentFormFreight),

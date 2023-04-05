@@ -24,6 +24,8 @@ import saleBudget from './routes/sale-budget';
 import freightBudget from './routes/freight-budget';
 import salesOrder from './routes/sales-order';
 import freightOrder from './routes/freight-order';
+import status from './routes/status';
+import orderStatus from './routes/order-status';
 
 class App {
   private app: express.Express;
@@ -68,6 +70,8 @@ class App {
     this.app.use('/freight-budget', freightBudget);
     this.app.use('/sales-order', salesOrder);
     this.app.use('/freight-order', freightOrder);
+    this.app.use('/status', status);
+    this.app.use('/order-status', orderStatus);
   }
 }
 
