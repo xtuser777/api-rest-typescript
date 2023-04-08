@@ -24,16 +24,16 @@ export class BillPayCategory {
     return result;
   };
 
-  update = async (): Promise<number> => {
+  update = async (description: string): Promise<number> => {
     if (this.id <= 0 || this.description.length == 0) return -5;
 
     const query = new QueryBuilder()
-      .update('categoris_conta_pagar')
+      .update('categoria_conta_pagar')
       .set('cat_con_pag_descricao = ?')
       .where('cat_con_pag_id = ?')
       .build();
 
-    const result = await Database.instance.update(query, [this.description, this.id]);
+    const result = await Database.instance.update(query, [description, this.id]);
 
     return result;
   };

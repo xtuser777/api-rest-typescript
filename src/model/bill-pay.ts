@@ -62,6 +62,8 @@ export class BillPay {
   getSalesOrderId = () => this.salesOrderId;
   getUserId = () => this.userId;
 
+  setId = (id: number) => (this.id = id);
+
   save = async (): Promise<number> => {
     if (
       this.id != 0 ||

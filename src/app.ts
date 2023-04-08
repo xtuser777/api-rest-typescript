@@ -26,6 +26,10 @@ import salesOrder from './routes/sales-order';
 import freightOrder from './routes/freight-order';
 import status from './routes/status';
 import orderStatus from './routes/order-status';
+import billPayCategory from './routes/bill-pay-category';
+import event from './routes/event';
+import billPay from './routes/bill-pay';
+import receiveBill from './routes/receive-bill';
 
 class App {
   private app: express.Express;
@@ -72,6 +76,10 @@ class App {
     this.app.use('/freight-order', freightOrder);
     this.app.use('/status', status);
     this.app.use('/order-status', orderStatus);
+    this.app.use('/bill-pay-category', billPayCategory);
+    this.app.use('/event', event);
+    this.app.use('/bill-pay', billPay);
+    this.app.use('/receive-bill', receiveBill);
   }
 }
 
