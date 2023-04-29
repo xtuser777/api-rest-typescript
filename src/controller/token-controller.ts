@@ -7,6 +7,8 @@ import { IndividualPerson } from '../model/individual-person';
 
 export class TokenController {
   store = async (req: Request, res: Response): Promise<Response> => {
+    // res.header('Access-Control-Allow-Origin', '*');
+
     const { login = '', password = '' } = req.body;
     if (!login || !password)
       return res.status(400).json({ errors: ['Credenciais inválidas.'] });

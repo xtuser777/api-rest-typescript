@@ -30,6 +30,13 @@ import billPayCategory from './routes/bill-pay-category';
 import event from './routes/event';
 import billPay from './routes/bill-pay';
 import receiveBill from './routes/receive-bill';
+import cors from 'cors';
+
+const whiteList = ['http://localhost:3000'];
+
+const options: cors.CorsOptions = {
+  origin: whiteList,
+};
 
 class App {
   private app: express.Express;
@@ -45,7 +52,7 @@ class App {
   };
 
   private middlewares() {
-    // this.app.use(Cors(corsOptions));
+    this.app.use(cors(options));
     // this.app.use(Helmet());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(express.json());
