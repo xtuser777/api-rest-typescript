@@ -10,8 +10,16 @@ import { EmployeeController } from './employee-controller';
 
 export class EventController {
   responseBuild = async (event: Event): Promise<any> => {
-    const freight = await new FreightOrder().findOne(event.getFreightOrderId());
-    const sale = await new SalesOrder().findOne(event.getSalesOrderId());
+    let freight = await new FreightOrder().findOne(event.getFreightOrderId());
+    if (event.getFreightOrderId() > 0 && !freight)
+      freight = new FreightOrder(
+        event.getFreightOrderId(),
+        new Date(),
+        'Pedido excluído.',
+      );
+    let sale = await new SalesOrder().findOne(event.getSalesOrderId());
+    if (event.getSalesOrderId() > 0 && !sale)
+      sale = new SalesOrder(event.getSalesOrderId(), new Date(), 'Pedido excluído.');
     const author = (await new User().find({ id: event.getUserId() }))[0];
 
     return {
@@ -31,6 +39,7 @@ export class EventController {
 
   index = async (req: Request, res: Response): Promise<Response> => {
     await Database.instance.open();
+    console.log(req.body);
     const events = await new Event().find(req.body);
     const response = [];
     for (const event of events) {

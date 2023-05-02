@@ -648,8 +648,8 @@ export class FreightOrderController {
       method == 1
         ? `Abertura do pedido de frete ${order}: ${orderDescription}`
         : `Exclusão do pedido de frete ${order}: ${orderDescription}`,
-      new Date(),
-      new Date(),
+      new Date().toISOString().substring(0, 10),
+      new Date().toISOString().split('T')[1].substring(0, 8),
       0,
       order,
       activeUser.getId(),

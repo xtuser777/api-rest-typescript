@@ -117,8 +117,8 @@ export class OrderStatusController {
     const responseEvent = await new Event(
       0,
       `Alteração do status do pedido ${orderId} para ${desc}.`,
-      new Date(),
-      new Date(),
+      new Date().toISOString().substring(0, 10),
+      new Date().toISOString().split('T')[1].substring(0, 8),
       0,
       orderId,
       activeUser.getId(),

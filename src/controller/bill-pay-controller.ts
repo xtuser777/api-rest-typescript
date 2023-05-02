@@ -440,8 +440,8 @@ export class BillPayController {
     return await new Event(
       0,
       description,
-      new Date(),
-      new Date(),
+      new Date().toISOString().substring(0, 10),
+      new Date().toISOString().split('T')[1].substring(0, 8),
       bill.getSalesOrderId(),
       bill.getFreightOrderId(),
       activeUser.getId(),

@@ -12,8 +12,8 @@ export class Event {
   constructor(
     private id: number = 0,
     private description: string = '',
-    private date: Date = new Date(),
-    private time: Date = new Date(),
+    private date: string = '',
+    private time: string = '',
     private salesOrderId: number = 0,
     private freightOrderId: number = 0,
     private userId: number = 0,
@@ -80,7 +80,7 @@ export class Event {
     const events: Event[] = [];
     const parameters = [];
 
-    let builder = new QueryBuilder().select('*').from('event');
+    let builder = new QueryBuilder().select('*').from('evento');
 
     if (fields) {
       if (fields.filter) {
@@ -99,15 +99,17 @@ export class Event {
       if (fields.type) {
         const order = fields.type == 1 ? 'ped_ven_id' : 'ped_fre_id';
         builder =
-          parameters.length == 1
-            ? builder.where(`${order} IS NOT NULL`)
-            : builder.and(`${order} IS NOT NULL`);
+          parameters.length == 0
+            ? builder.where(`${order} IS NOT NULL AND ${order} > 0`)
+            : builder.and(`${order} IS NOT NULL AND ${order} > 0`);
       }
 
       if (fields.orderBy) builder = builder.orderBy(fields.orderBy);
     }
 
     const query = builder.build();
+
+    console.log(query);
 
     const rows = await Database.instance.select(query, parameters);
 
@@ -120,8 +122,8 @@ export class Event {
 
   private convertRow = (row: any): Event => {
     this.id = row.evt_id;
-    this.date = new Date(row.evt_data);
-    this.time = new Date(row.evt_hora);
+    this.date = row.evt_data;
+    this.time = row.evt_hora;
     this.description = row.evt_descricao;
     this.freightOrderId = row.ped_fre_id ? row.ped_fre_id : 0;
     this.salesOrderId = row.ped_ven_id ? row.ped_ven_id : 0;

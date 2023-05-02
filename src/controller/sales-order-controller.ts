@@ -487,8 +487,8 @@ export class SalesOrderController {
       method == 1
         ? `Abertura do pedido de venda ${order}: ${orderDescription}`
         : `O pedido de venda ${order} foi deletado.`,
-      new Date(),
-      new Date(),
+      new Date().toISOString().substring(0, 10),
+      new Date().toISOString().split('T')[1].substring(0, 8),
       order,
       0,
       user,
