@@ -19,10 +19,8 @@ export class CityController {
   };
 
   index = async (req: Request, res: Response): Promise<Response> => {
-    if (req.params.function == 'show') return this.show(req, res);
     await Database.instance.open();
-    const filters = JSON.parse(req.params.value);
-    const cities = await new City().find(filters);
+    const cities = await new City().find({ name: req.params.name });
 
     const response = [];
 
@@ -36,10 +34,10 @@ export class CityController {
   };
 
   show = async (req: Request, res: Response): Promise<Response> => {
-    if (!req.params.value) return res.status(400).json('Parametro ausente.');
+    if (!req.params.id) return res.status(400).json('Parametro ausente.');
 
     await Database.instance.open();
-    const city = (await new City().find({ id: Number.parseInt(req.params.value) }))[0];
+    const city = (await new City().find({ id: Number.parseInt(req.params.id) }))[0];
     const response = await this.responseBuild(city);
     await Database.instance.close();
 

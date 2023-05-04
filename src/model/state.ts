@@ -54,7 +54,7 @@ export class State {
     return states;
   };
 
-  private convert = async (row: any): Promise<void> => {
+  private convert = (row: any): void => {
     this.id = row.est_id;
     this.name = row.est_nome;
     this.acronym = row.est_sigla;

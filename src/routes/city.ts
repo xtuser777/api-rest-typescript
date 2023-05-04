@@ -3,6 +3,8 @@ import { CityController } from '../controller/city-controller';
 
 const router = Router();
 
-router.get('/:function/:value?', new CityController().index);
+router.get('/name/:name', new CityController().index);
+
+router.get('/:id', new CityController().show);
 
 export default router;

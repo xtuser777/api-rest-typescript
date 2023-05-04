@@ -109,8 +109,6 @@ export class Event {
 
     const query = builder.build();
 
-    console.log(query);
-
     const rows = await Database.instance.select(query, parameters);
 
     for (const row of rows) {

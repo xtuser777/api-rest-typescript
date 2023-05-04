@@ -39,8 +39,7 @@ export class EventController {
 
   index = async (req: Request, res: Response): Promise<Response> => {
     await Database.instance.open();
-    console.log(req.body);
-    const events = await new Event().find(req.body);
+    const events = await new Event().find();
     const response = [];
     for (const event of events) {
       response.push(await this.responseBuild(event));
