@@ -1,26 +1,21 @@
 import { Request, Response } from 'express';
 import { City } from '../model/city';
-import { State } from '../model/state';
 import Database from '../util/database';
 
 export class CityController {
   responseBuild = async (city: City): Promise<any> => {
-    const state = (await new State().find({ id: city.getStateId() }))[0];
+    // const state = (await new State().find({ id: city.getStateId() }))[0];
 
     return {
       id: city.getId(),
       name: city.getName(),
-      state: {
-        id: state.getId(),
-        name: state.getName(),
-        acronym: state.getAcronym(),
-      },
+      state: city.getStateId(),
     };
   };
 
   index = async (req: Request, res: Response): Promise<Response> => {
     await Database.instance.open();
-    const cities = await new City().find({ name: req.params.name });
+    const cities = await new City().find();
 
     const response = [];
 
