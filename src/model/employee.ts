@@ -42,11 +42,15 @@ export class Employee {
     if (this.id <= 0 || params.type <= 0 || params.admission == null) return -5;
 
     let result = 0;
-    const parameters = [params.type, params.admission, this.id];
+    const parameters = params.demission
+      ? [params.type, params.admission, params.demission, this.id]
+      : [params.type, params.admission, this.id];
 
     const query = new QueryBuilder()
       .update('funcionario')
-      .set('fun_tipo = ?, fun_admissao = ?')
+      .set(
+        `fun_tipo = ?, fun_admissao = ?${params.demission ? ', fun_demissao = ?' : ''}`,
+      )
       .where('fun_id = ?')
       .build();
 

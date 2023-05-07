@@ -58,13 +58,23 @@ export class User {
     if (this.id <= 0 || params.level === 0) return -5;
 
     let result = 0;
-    const parameters = params.password
-      ? [params.login, await bcryptjs.hash(params.password, 8), params.level, this.id]
-      : [params.login, params.level, this.id];
+    // const parameters = params.password
+    //   ? [params.login, await bcryptjs.hash(params.password, 8), params.level, this.id]
+    //   : [params.login, params.level, this.id];
+
+    const parameters = [];
+    parameters.push(params.login);
+    if (params.password) parameters.push(await bcryptjs.hash(params.password, 8));
+    if (params.active) parameters.push(params.active);
+    parameters.push(params.level, this.id);
 
     const query = new QueryBuilder()
       .update('usuario')
-      .set(`usu_login = ?,${params.password ? 'usu_senha_hash = ?,' : ''}niv_id = ?`)
+      .set(
+        `usu_login = ?,${params.password ? 'usu_senha_hash = ?,' : ''}${
+          params.active ? 'usu_ativo = ?,' : ''
+        }niv_id = ?`,
+      )
       .where('usu_id = ?')
       .build();
 
