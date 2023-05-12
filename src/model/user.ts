@@ -65,14 +65,14 @@ export class User {
     const parameters = [];
     parameters.push(params.login);
     if (params.password) parameters.push(await bcryptjs.hash(params.password, 8));
-    if (params.active) parameters.push(params.active);
+    if (params.active != undefined) parameters.push(params.active);
     parameters.push(params.level, this.id);
 
     const query = new QueryBuilder()
       .update('usuario')
       .set(
         `usu_login = ?,${params.password ? 'usu_senha_hash = ?,' : ''}${
-          params.active ? 'usu_ativo = ?,' : ''
+          params.active != undefined ? 'usu_ativo = ?,' : ''
         }niv_id = ?`,
       )
       .where('usu_id = ?')

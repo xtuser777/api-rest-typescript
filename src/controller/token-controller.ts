@@ -35,6 +35,9 @@ export class TokenController {
       expiresIn: process.env.TOKEN_EXPIRATION,
     });
 
-    return res.json({ token, user: { name: person.getName(), id, login } });
+    return res.json({
+      token,
+      user: { name: person.getName(), id, login, level: user.getLevelId() },
+    });
   };
 }

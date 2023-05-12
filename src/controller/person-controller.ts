@@ -20,7 +20,6 @@ export class PersonController {
     const contact = (await new Contact().find({ id: person.getContactId() }))[0];
     const address = (await new Address().find({ id: contact.getAddressId() }))[0];
     const city = (await new City().find({ id: address.getCityId() }))[0];
-    const state = (await new State().find({ id: city.getStateId() }))[0];
 
     return {
       id: person.getId(),
@@ -43,11 +42,7 @@ export class PersonController {
           city: {
             id: city.getId(),
             name: city.getName(),
-            state: {
-              id: state.getId(),
-              name: state.getName(),
-              acronym: state.getAcronym(),
-            },
+            state: city.getStateId(),
           },
         },
       },
@@ -80,11 +75,7 @@ export class PersonController {
           city: {
             id: city.getId(),
             name: city.getName(),
-            state: {
-              id: state.getId(),
-              name: state.getName(),
-              acronym: state.getAcronym(),
-            },
+            state: city.getStateId(),
           },
         },
       },

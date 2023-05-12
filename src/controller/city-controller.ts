@@ -3,9 +3,7 @@ import { City } from '../model/city';
 import Database from '../util/database';
 
 export class CityController {
-  responseBuild = async (city: City): Promise<any> => {
-    // const state = (await new State().find({ id: city.getStateId() }))[0];
-
+  responseBuild = (city: City): any => {
     return {
       id: city.getId(),
       name: city.getName(),
@@ -20,7 +18,7 @@ export class CityController {
     const response = [];
 
     for (const city of cities) {
-      response.push(await this.responseBuild(city));
+      response.push(this.responseBuild(city));
     }
 
     await Database.instance.close();
@@ -33,7 +31,7 @@ export class CityController {
 
     await Database.instance.open();
     const city = (await new City().find({ id: Number.parseInt(req.params.id) }))[0];
-    const response = await this.responseBuild(city);
+    const response = this.responseBuild(city);
     await Database.instance.close();
 
     return res.json(response);

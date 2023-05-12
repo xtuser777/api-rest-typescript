@@ -5,7 +5,7 @@ import { Request, Response } from 'express';
 export class LevelController {
   index = async (req: Request, res: Response): Promise<Response> => {
     await Database.instance.open();
-    const levels = await new Level().find(req.body);
+    const levels = await new Level().find();
     await Database.instance.close();
 
     return res.json(levels);

@@ -1,6 +1,5 @@
 import Database from '../util/database';
 import QueryBuilder from '../util/QueryBuilder';
-import { City } from './city';
 
 interface IFields {
   id?: number;
