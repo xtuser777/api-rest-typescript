@@ -16,7 +16,6 @@ export class DriverController {
     const contact = (await new Contact().find({ id: person.getContactId() }))[0];
     const address = (await new Address().find({ id: contact.getAddressId() }))[0];
     const city = (await new City().find({ id: address.getCityId() }))[0];
-    const state = (await new State().find({ id: city.getStateId() }))[0];
     const bd = (await new BankData().findOne(driver.getBankDataId())) as BankData;
 
     return {
