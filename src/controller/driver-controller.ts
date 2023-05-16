@@ -39,15 +39,12 @@ export class DriverController {
             street: address.getStreet(),
             number: address.getNumber(),
             neighborhood: address.getNeighborhood(),
+            complement: address.getComplement(),
             code: address.getCode(),
             city: {
               id: city.getId(),
               name: city.getName(),
-              state: {
-                id: state.getId(),
-                name: state.getName(),
-                acronym: state.getAcronym(),
-              },
+              state: city.getStateId(),
             },
           },
         },
