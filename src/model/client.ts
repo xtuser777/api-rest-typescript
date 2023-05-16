@@ -124,15 +124,14 @@ export class Client {
       row.cli_id,
       row.cli_cadastro,
       row.cli_tipo,
-      row.tipo == 1 ? row.pf_id : row.pj_id,
+      row.cli_tipo == 1 ? row.pf_id : row.pj_id,
     );
   };
 
   find = async (fields?: IFields): Promise<Client[]> => {
     const clients: Client[] = [];
-    const parameters = [];
 
-    let builder = new QueryBuilder()
+    const builder = new QueryBuilder()
       .select(`cl.cli_id,cl.cli_cadastro,cl.cli_tipo,cpf.pf_id,cpj.pj_id`)
       .from('cliente cl')
       .leftJoin('cliente_pessoa_fisica cpf')
@@ -142,109 +141,11 @@ export class Client {
       .leftJoin('pessoa_fisica pf')
       .on('cpf.pf_id = pf.pf_id')
       .leftJoin('pessoa_juridica pj')
-      .on('cpj.pj_id = pj.pj_id')
-      .innerJoin('contato ct')
-      .on('ct.ctt_id = pf.ctt_id or ct.ctt_id = pj.ctt_id');
-
-    if (fields) {
-      if (fields.filter) {
-        if (fields.register) {
-          parameters.push(
-            `%${fields.filter}%`,
-            `%${fields.filter}%`,
-            `%${fields.filter}%`,
-            fields.register,
-          );
-          builder = builder
-            .where(
-              '(pf.pf_nome like ? or pj.pj_nome_fantasia like ? or ct.ctt_email like ?)',
-            )
-            .and('cl.cli_cadastro = ?');
-        } else if (fields.initial && fields.end) {
-          if (fields.type) {
-            parameters.push(
-              `%${fields.filter}%`,
-              `%${fields.filter}%`,
-              `%${fields.filter}%`,
-              fields.initial,
-              fields.end,
-              fields.type,
-            );
-            builder = builder
-              .where(
-                '(pf.pf_nome like ? or pj.pj_nome_fantasia like ? or ct.ctt_email like ?)',
-              )
-              .and('(cl.cli_cadastro >= ? and cl.cli_cadastro <= ?)')
-              .and('cl.cli_tipo = ?');
-          } else {
-            parameters.push(
-              `%${fields.filter}%`,
-              `%${fields.filter}%`,
-              `%${fields.filter}%`,
-              fields.initial,
-              fields.end,
-            );
-            builder = builder
-              .where(
-                '(pf.pf_nome like ? or pj.pj_nome_fantasia like ? or ct.ctt_email like ?)',
-              )
-              .and('(cl.cli_cadastro >= ? and cl.cli_cadastro <= ?)');
-          }
-        } else if (fields.type) {
-          parameters.push(
-            `%${fields.filter}%`,
-            `%${fields.filter}%`,
-            `%${fields.filter}%`,
-            fields.type,
-          );
-          builder = builder
-            .where(
-              '(pf.pf_nome like ? or pj.pj_nome_fantasia like ? or ct.ctt_email like ?)',
-            )
-            .and('cl.cli_tipo = ?');
-        } else {
-          parameters.push(
-            `%${fields.filter}%`,
-            `%${fields.filter}%`,
-            `%${fields.filter}%`,
-          );
-          builder = builder
-            .where('pf.pf_nome like ?')
-            .or('pj.pj_nome_fantasia like ?')
-            .or('ct.ctt_email like ?');
-        }
-      }
-
-      if (fields.register) {
-        parameters.push(fields.register);
-        builder = builder.where('cl.cli_cadastro = ?');
-      }
-
-      if (fields.initial && fields.end) {
-        if (fields.type) {
-          parameters.push(fields.initial, fields.end, fields.type);
-          builder = builder
-            .where('(cl.cli_cadastro >= ? and cl.cli_cadastro <= ?)')
-            .and('cl.cli_tipo = ?');
-        } else {
-          parameters.push(fields.initial, fields.end);
-          builder = builder.where('(cl.cli_cadastro >= ? and cl.cli_cadastro <= ?)');
-        }
-      }
-
-      if (fields.type) {
-        parameters.push(fields.type);
-        builder = builder.where('cl.cli_tipo = ?');
-      }
-
-      if (fields.orderBy) {
-        builder = builder.orderBy(fields.orderBy);
-      }
-    }
+      .on('cpj.pj_id = pj.pj_id');
 
     const query = builder.build();
 
-    const rows = await Database.instance.select(query, parameters);
+    const rows = await Database.instance.select(query);
 
     for (const row of rows) {
       clients.push(
@@ -252,7 +153,7 @@ export class Client {
           row.cli_id,
           row.cli_cadastro,
           row.cli_tipo,
-          row.tipo == 1 ? row.pf_id : row.pj_id,
+          row.cli_tipo == 1 ? row.pf_id : row.pj_id,
         ),
       );
     }
